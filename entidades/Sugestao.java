@@ -78,7 +78,7 @@ public class Sugestao implements Registro {
     }
 
     @Override
-    public Object getSecudaryKey() {
+    public String getSecudaryKey() {
         return null;
     }
 

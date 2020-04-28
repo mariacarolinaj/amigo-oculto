@@ -117,7 +117,7 @@ public class Grupo implements Registro {
     }
 
     @Override
-    public Object getSecudaryKey() {
+    public String getSecudaryKey() {
         return null;
     }
 

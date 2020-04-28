@@ -8,7 +8,7 @@ public interface Registro {
 
     public void setID(int n);
 
-    public Object getSecudaryKey();
+    public String getSecudaryKey();
 
     public byte[] toByteArray() throws IOException;
 
