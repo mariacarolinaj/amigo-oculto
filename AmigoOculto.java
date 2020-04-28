@@ -1,5 +1,5 @@
 import java.io.*;
-import cruds.CrudUsuario;
+import cruds.*;
 
 public class AmigoOculto {
     private static InputStream is = System.in;
@@ -7,6 +7,8 @@ public class AmigoOculto {
     private static BufferedReader br = new BufferedReader(isr);
 
     private static CrudUsuario crudUsuario;
+    private static CrudSugestao crudSugestao;
+    private static CrudGrupo crudGrupo;
 
     public static void main(String[] args) throws IOException {
         inicializarServicos();
@@ -20,6 +22,8 @@ public class AmigoOculto {
 
     private static void inicializarServicos() {
         crudUsuario = new CrudUsuario();
+        crudSugestao = new CrudSugestao();
+        crudGrupo = new CrudGrupo();
     }
 
     private static void exibeMenuInicial() throws IOException, Exception {
