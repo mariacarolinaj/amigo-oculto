@@ -9,6 +9,7 @@ public class AmigoOculto {
     private static CrudUsuario crudUsuario;
     private static CrudSugestao crudSugestao;
     private static CrudGrupo crudGrupo;
+    private static CrudConvite crudConvite;
 
     public static void main(String[] args) throws IOException {
         inicializarServicos();
@@ -24,6 +25,7 @@ public class AmigoOculto {
         crudUsuario = new CrudUsuario();
         crudSugestao = new CrudSugestao();
         crudGrupo = new CrudGrupo();
+        crudConvite = new CrudConvite();
     }
 
     private static void exibeMenuInicial() throws IOException, Exception {
