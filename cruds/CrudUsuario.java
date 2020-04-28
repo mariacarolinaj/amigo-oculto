@@ -2,6 +2,7 @@ package cruds;
 
 import java.io.*;
 import entidades.*;
+import util.Util;
 
 public class CrudUsuario {
 
@@ -35,7 +36,7 @@ public class CrudUsuario {
 
   public boolean logar() throws Exception {
     String email, senha;
-    System.out.println("\nACESSO AO SISTEMA");
+    System.out.println("ACESSO AO SISTEMA");
     System.out.print("\nE-mail: ");
     email = br.readLine();
     System.out.print("\nSenha: ");
@@ -43,24 +44,29 @@ public class CrudUsuario {
 
     ChaveSecundariaUsuario chaveSecundaria = arquivoChaveSecundariaUsuario.buscarChaveSecundariaUsuario(email);
 
+    Util.limparTela();
+
     if (chaveSecundaria != null) {
       Usuario usuario = (Usuario) arquivoUsuarios.buscar(chaveSecundaria.getIdUsuario());
       if (usuario != null) {
         if (usuario.getSenha().equals(senha)) {
-          System.out.println("\nBem vindo(a), " + usuario.getNome());
+          System.out.println("Bem vindo(a), " + usuario.getNome() + "\n");
           return true; // usuario logado
         } else {
-          System.out.println("\nSenha incorreta!");
+          System.out.println("Senha incorreta!");
         }
       } else {
         // existe chave secundária, mas não tem usuário associado a ela
-        System.out.println("\nO usuário informado não existe.");
+        System.out.println("O usuário informado não existe.");
       }
     } else {
       // usuário não encontrado nas chaves secundárias (e-mail incorreto/inexistente)
-      System.out.println("\nO usuário informado não existe.");
+      System.out.println("O usuário informado não existe.");
     }
 
+    System.out.println("\nPressione enter para continuar...");
+    br.readLine();
+    Util.limparTela();
     return false; // não conseguiu logar
   }
 
@@ -68,6 +74,7 @@ public class CrudUsuario {
 
   public void criarUsuario() throws Exception {
     String nome, email, senha;
+    System.out.println("NOVO USUÁRIO");
     System.out.print("\nNome: ");
     nome = br.readLine();
     System.out.print("\nE-mail: ");
@@ -88,6 +95,9 @@ public class CrudUsuario {
     }
 
     System.out.println("\nUsuário cadastrado com sucesso.");
+    System.out.println("\nPressione enter para continuar...");
+    br.readLine();
+    Util.limparTela();
   }
 
   // #endregion
@@ -117,6 +127,8 @@ public class CrudUsuario {
     int id = Integer.parseInt(br.readLine());
     int opcao;
     Usuario usuarioExistente = (Usuario) arquivoUsuarios.buscar(id);
+
+    Util.limparTela();
 
     if (usuarioExistente != null) {
       Usuario usuarioAtualizado = usuarioExistente.clone();
@@ -149,18 +161,30 @@ public class CrudUsuario {
               boolean atualizado = (boolean) arquivoUsuarios.atualizar(usuarioAtualizado);
               if (atualizado) {
                 System.out.println("Usuário atualizado com sucesso.");
+                System.out.println("\nPressione enter para continuar...");
+                br.readLine();
+                Util.limparTela();
               } else {
                 System.out.println("Não foi possível atualizar os dados nesse momento. Tente novamente.");
+                System.out.println("\nPressione enter para continuar...");
+                br.readLine();
+                Util.limparTela();
               }
             }
             // volta pro menu anterior
             break;
           default:
             System.out.println("Opção inválida. Tente novamente.\n");
+            System.out.println("\nPressione enter para continuar...");
+            br.readLine();
+            Util.limparTela();
         }
       } while (opcao != 0);
     } else {
-      System.out.println("UsuÁrio não encontrado.");
+      System.out.println("Usuário não encontrado.");
+      System.out.println("\nPressione enter para continuar...");
+      br.readLine();
+      Util.limparTela();
     }
   }
 
@@ -173,6 +197,9 @@ public class CrudUsuario {
     System.out.println("0: Salvar alterações e voltar para o menu anterior");
 
     opcao = Integer.parseInt(br.readLine());
+
+    Util.limparTela();
+
     return opcao;
   }
 
@@ -185,15 +212,23 @@ public class CrudUsuario {
 
     Usuario usuarioExistente = (Usuario) arquivoUsuarios.buscar(id);
 
+    Util.limparTela();
+
     if (usuarioExistente != null) {
       boolean excluido = arquivoUsuarios.excluir(id);
       if (excluido) {
         System.out.println("O usuario de ID " + id + " foi excluído com sucesso.");
       } else {
         System.out.println("Não foi possível excluir este usuário. Tente novamente.");
+        System.out.println("\nPressione enter para continuar...");
+        br.readLine();
+        Util.limparTela();
       }
     } else {
       System.out.println("Usuário não encontrado.");
+      System.out.println("\nPressione enter para continuar...");
+      br.readLine();
+      Util.limparTela();
     }
   }
   // #endregion

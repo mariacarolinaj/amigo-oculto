@@ -72,7 +72,7 @@ public class Convite implements Registro {
 
     @Override
     public byte[] toByteArray() throws IOException {
-        / final ByteArrayOutputStream dados = new ByteArrayOutputStream();
+        final ByteArrayOutputStream dados = new ByteArrayOutputStream();
         final DataOutputStream saida = new DataOutputStream(dados);
         saida.writeInt(this.idConvite);
         saida.writeInt(this.idGrupo);

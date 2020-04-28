@@ -7,6 +7,7 @@
 
 import java.io.*;
 import cruds.*;
+import util.Util;
 
 public class AmigoOculto {
     private static InputStream is = System.in;
@@ -39,7 +40,7 @@ public class AmigoOculto {
         int opcao;
 
         do {
-            System.out.println("\nAMIGO OCULTO 1.0\n");
+            System.out.println("AMIGO OCULTO 1.0\n");
             System.out.println("1: Acesso ao sistema");
             System.out.println("2: Novo usuário (primeiro acesso)");
             System.out.println("0: Sair\n");
@@ -47,6 +48,8 @@ public class AmigoOculto {
             System.out.print("Ir para: ");
 
             opcao = Integer.parseInt(br.readLine());
+
+            Util.limparTela();
 
             switch (opcao) {
                 case 1:
@@ -62,6 +65,9 @@ public class AmigoOculto {
                     break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.\n");
+                    System.out.println("\nPressione enter para continuar...");
+                    br.readLine();
+                    Util.limparTela();
             }
         } while (opcao != 0);
     }
@@ -69,7 +75,7 @@ public class AmigoOculto {
     public static void exibeMenuUsuarioLogado() throws NumberFormatException, IOException {
         int opcao;
         do {
-            System.out.println("\nINÍCIO\n");
+            System.out.println("INÍCIO\n");
             System.out.println("1: Sugestões de presente");
             System.out.println("2: Grupos");
             System.out.println("3: Novos convites (0)");
@@ -78,6 +84,9 @@ public class AmigoOculto {
             System.out.print("\nIr para: ");
 
             opcao = Integer.parseInt(br.readLine());
+
+            Util.limparTela();
+
             switch (opcao) {
                 case 1:
                     break;
@@ -86,10 +95,16 @@ public class AmigoOculto {
                 case 3:
                     break;
                 case 0:
-                    System.out.println("\nFazendo logoff...");
+                    System.out.println("Fazendo logoff...");
+                    System.out.println("\nPressione enter para continuar...");
+                    br.readLine();
+                    Util.limparTela();
                     break;
                 default:
-                    System.out.println("\nOpção inválida. Tente novamente.");
+                    System.out.println("Opção inválida. Tente novamente.");
+                    System.out.println("\nPressione enter para continuar...");
+                    br.readLine();
+                    Util.limparTela();
             }
         } while (opcao != 0);
     }
