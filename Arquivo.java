@@ -2,6 +2,7 @@
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import entidades.*;
 
 public class Arquivo<T extends Registro> {
 

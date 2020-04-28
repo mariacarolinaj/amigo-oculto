@@ -1,4 +1,5 @@
 import java.io.*;
+import entidades.*;
 
 public class Crud {
 
@@ -101,6 +102,9 @@ public class Crud {
 
     opcao = Integer.parseInt(br.readLine());
 
+    switch (opcao) {
+      // implementar menu
+    }
   }
 
   public static void criarUsuario() throws Exception {
