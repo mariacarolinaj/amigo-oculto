@@ -8,7 +8,7 @@ public class Util {
             if (so.contains("Windows")) {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
             } else {
-                Runtime.getRuntime().exec("clear");
+                new ProcessBuilder("/bin/bash", "-c", "clear").inheritIO().start().waitFor();;
             }
         } catch (final Exception e) {
             e.printStackTrace();
