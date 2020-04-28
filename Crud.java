@@ -33,7 +33,7 @@ public class Crud {
     int opcao;
 
     do {
-      System.out.println("AMIGO OCULTO 1.0\n");
+      System.out.println("\nAMIGO OCULTO 1.0\n");
       System.out.println("1: Acesso ao sistema");
       System.out.println("2: Novo usuário (primeiro acesso)");
       System.out.println("0: Sair\n");
@@ -74,6 +74,7 @@ public class Crud {
       if (usuario != null) {
         if (usuario.getSenha().equals(senha)) {
           // usuario logado
+          System.out.println("\nBem vindo(a), " + usuario.getNome());
           return true;
         } else {
           System.out.println("\nSenha incorreta!\n");
@@ -90,7 +91,6 @@ public class Crud {
 
   public static void exibeMenuUsuarioLogado() throws NumberFormatException, IOException {
     int opcao;
-
     System.out.println("\nINICIO\n");
     System.out.println("1: Sugestões de presente");
     System.out.println("2: Grupos");
