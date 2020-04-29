@@ -1,5 +1,5 @@
 /*
- * AMIGO OCULTO
+ * Amigo Oculto
  * Trabalho prático para a disciplina de Algoritmos e Estruturas de Dados III do curso de Ciência da Computação
  * Implementado por Maria Carolina, Viktor Guilherme e Roberto Mafra em 1/2020
  * PUC Minas - Professor Marcos Kutova
@@ -29,6 +29,11 @@ public class AmigoOculto {
         }
     }
 
+    /*
+     * Método inicializarServicos(): Inicializa as instâncias dos CRUD's a serem
+     * utilizados nas operações.
+     */
+
     private static void inicializarServicos() {
         crudUsuario = new CrudUsuario();
         crudSugestao = new CrudSugestao();
@@ -36,16 +41,25 @@ public class AmigoOculto {
         crudConvite = new CrudConvite();
     }
 
+    /*
+     * Método exibeMenuInicial(): Exibe o menu inicial, realiza leitura da opção
+     * desejada e redireciona o usuário para o método correspondente.
+     */
+
     private static void exibeMenuInicial() throws IOException, Exception {
         int opcao;
 
         do {
-            System.out.println("AMIGO OCULTO 1.0\n");
-            System.out.println("1: Acesso ao sistema");
-            System.out.println("2: Novo usuário (primeiro acesso)");
-            System.out.println("0: Sair\n");
-
-            System.out.print("Ir para: ");
+            System.out.println("▒▒▒▒▒▒▒█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█");
+            System.out.println("▒▒▒▒▒▒▒█░▒▒▒▒▒▒▒▓▒▒▓▒▒▒▒▒▒▒░█");
+            System.out.println("▒▒▒▒▒▒▒█░▒▒▓▒▒▒▒▒▒▒▒▒▄▄▒▓▒▒░█░▄▄         Amigo Oculto 1.0");
+            System.out.println("▒▒▄▀▀▄▄█░▒▒▒▒▒▒▓▒▒▒▒█░░▀▄▄▄▄▄▀░░█");
+            System.out.println("▒▒█░░░░█░▒▒▒▒▒▒▒▒▒▒▒█░░░░░░░░░░░█");
+            System.out.println("▒▒▒▀▀▄▄█░▒▒▒▒▓▒▒▒▓▒█░░░█▒░░░░█▒░░█       1: Acesso ao sistema");
+            System.out.println("▒▒▒▒▒▒▒█░▒▓▒▒▒▒▓▒▒▒█░░░░░░░▀░░░░░█       2: Novo usuário (primeiro acesso)");
+            System.out.println("▒▒▒▒▒▄▄█░▒▒▒▓▒▒▒▒▒▒▒█░░█▄▄█▄▄█░░█        0: Sair");
+            System.out.println("▒▒▒▒█░░░█▄▄▄▄▄▄▄▄▄▄█░█▄▄▄▄▄▄▄▄▄█");
+            System.out.print("▒▒▒▒█▄▄█░░█▄▄█░░░░░░█▄▄█░░█▄▄█           Ir para: ");
 
             opcao = Integer.parseInt(br.readLine());
 
@@ -61,7 +75,7 @@ public class AmigoOculto {
                 case 2:
                     crudUsuario.criarUsuario();
                     break;
-                case 0: // sair do programa
+                case 0: // sair do programa; não precisa fazer nada
                     break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.\n");
@@ -71,6 +85,12 @@ public class AmigoOculto {
             }
         } while (opcao != 0);
     }
+
+    /*
+     * Método exibeMenuUsuarioLogado(): Lista as opções do menu inicial para o
+     * usuário após seu login. Realiza leitura da opção desejada e redireciona para
+     * o método correspondente.
+     */
 
     public static void exibeMenuUsuarioLogado() throws NumberFormatException, IOException {
         int opcao;
