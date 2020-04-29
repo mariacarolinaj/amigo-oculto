@@ -140,6 +140,7 @@ public class CrudGrupo {
                     this.atualizarGrupo();
                     break;
                 case 4:
+                    this.desativarGrupo();
                     break;
                 case 0: // não é necessário fazer nada
                     break;
@@ -398,6 +399,56 @@ public class CrudGrupo {
                     Util.mensagemContinuar();
             }
         } while (opcao != 0);
+    }
+
+    // #endregion
+
+    // #region DELETE
+
+    /* Realiza a desativação do grupo. Não apaga seus dados da base de dados. */
+
+    public void desativarGrupo() throws Exception {
+        int[] idsGrupos = chavesGruposUsuario.lista(this.idUsuarioLogado);
+        int indiceInsercao = 0;
+        Grupo[] grupos = new Grupo[idsGrupos.length];
+
+        System.out.println("DESATIVAR GRUPO\n");
+
+        for (int i = 0; i < idsGrupos.length; i++) {
+            Grupo grupo = (Grupo) arquivoGrupos.buscar(idsGrupos[i]);
+            if (grupo.isAtivo()) {
+                grupos[indiceInsercao++] = grupo;
+            }
+        }
+
+        if (indiceInsercao == 0) {
+            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+        } else {
+            for (int i = 0; i < indiceInsercao; i++) {
+                System.out.println((i + 1) + ". " + grupos[i].getNome());
+            }
+            System.out.print("\nInforme o número do grupo que deseja desativar ou 0 para retornar ao menu anterior: ");
+            int indiceGrupoADesativar = Integer.parseInt(br.readLine()) - 1;
+
+            if (indiceGrupoADesativar >= 0) {
+                Grupo grupoADesativar = grupos[indiceGrupoADesativar].clone();
+
+                System.out.print("\nConfirmar desativação do grupo " + grupoADesativar.getNome() + "? (S/N) ");
+                char confirmacao = br.readLine().charAt(0);
+
+                if (confirmacao == 's' || confirmacao == 'S') {
+                    grupoADesativar.setAtivo(false);
+                    boolean desativado = arquivoGrupos.atualizar(grupoADesativar);
+                    if (desativado) {
+                        System.out.println("\nO grupo foi desativado com sucesso.");
+                    } else {
+                        System.out.println("\nNão foi possível desativar o grupo no momento. Tente novamente.");
+
+                    }
+                }
+            }
+        }
+        Util.mensagemContinuar();
     }
 
     // #endregion
