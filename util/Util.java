@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Util {
 
@@ -58,5 +61,18 @@ public class Util {
 
     public static void mensagemSucessoCadastro() {
         System.out.println("\nCadastro realizado com sucesso.");
+    }
+
+    public static Date validarEMontarData(String data) {
+        Date objetoData = null;
+        try {
+
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            objetoData = (Date) formatter.parse(data);
+        } catch (Exception e) {
+            System.out.println("A data inserida é inválida. Tente novamente.");
+        }
+
+        return objetoData;
     }
 }

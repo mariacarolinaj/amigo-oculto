@@ -112,6 +112,7 @@ public class AmigoOculto {
                     crudSugestao.exibeMenuSugestoes();
                     break;
                 case 2:
+                    crudGrupo.exibeMenuGrupos();
                     break;
                 case 3:
                     break;
