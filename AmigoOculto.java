@@ -76,13 +76,12 @@ public class AmigoOculto {
                 case 2:
                     crudUsuario.criarUsuario();
                     break;
-                case 0: // sair do programa; não precisa fazer nada
+                case 0:
+                    // sair do programa; não precisa fazer nada
                     break;
                 default:
-                    System.out.println("Opção inválida. Tente novamente.\n");
-                    System.out.println("\nPressione enter para continuar...");
-                    br.readLine();
-                    Util.limparTela();
+                    Util.mensagemTenteNovamente();
+                    Util.mensagemContinuar();
             }
         } while (opcao != 0);
     }
@@ -118,15 +117,11 @@ public class AmigoOculto {
                     break;
                 case 0:
                     System.out.println("Fazendo logoff...");
-                    System.out.println("\nPressione enter para continuar...");
-                    br.readLine();
-                    Util.limparTela();
+                    Util.mensagemContinuar();
                     break;
                 default:
-                    System.out.println("Opção inválida. Tente novamente.");
-                    System.out.println("\nPressione enter para continuar...");
-                    br.readLine();
-                    Util.limparTela();
+                    Util.mensagemTenteNovamente();
+                    Util.mensagemContinuar();
             }
         } while (opcao != 0);
     }

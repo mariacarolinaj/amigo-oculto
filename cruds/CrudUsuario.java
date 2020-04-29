@@ -75,9 +75,8 @@ public class CrudUsuario {
       System.out.println("O usuário informado não existe.");
     }
 
-    System.out.println("\nPressione enter para continuar...");
-    br.readLine();
-    Util.limparTela();
+    Util.mensagemContinuar();
+
     return null; // não conseguiu logar
   }
 
@@ -119,9 +118,7 @@ public class CrudUsuario {
       System.out.print("\nO e-mail informado já está associado a outro usuário.");
       System.out.println("Tente novamente com um e-mail válido.");
     }
-    System.out.println("\nPressione enter para continuar...");
-    br.readLine();
-    Util.limparTela();
+    Util.mensagemContinuar();
   }
 
   // #endregion
@@ -197,28 +194,22 @@ public class CrudUsuario {
             if (!usuarioAtualizado.equals(usuarioExistente)) {
               boolean atualizado = (boolean) arquivoUsuarios.atualizar(usuarioAtualizado);
               if (atualizado) {
-                System.out.println("Usuário atualizado com sucesso.");
+                Util.mensagemSucessoAtualizacao();
               } else {
-                System.out.println("Não foi possível atualizar os dados nesse momento. Tente novamente.");
+                Util.mensagemErroAtualizacao();
               }
-              System.out.println("\nPressione enter para continuar...");
-              br.readLine();
-              Util.limparTela();
+              Util.mensagemContinuar();
             }
             // volta pro menu anterior
             break;
           default:
-            System.out.println("Opção inválida. Tente novamente.\n");
-            System.out.println("\nPressione enter para continuar...");
-            br.readLine();
-            Util.limparTela();
+            Util.mensagemTenteNovamente();
+            Util.mensagemContinuar();
         }
       } while (opcao != 0);
     } else {
       System.out.println("Usuário não encontrado.");
-      System.out.println("\nPressione enter para continuar...");
-      br.readLine();
-      Util.limparTela();
+      Util.mensagemContinuar();
     }
   }
 
@@ -271,15 +262,11 @@ public class CrudUsuario {
         System.out.println("O usuario de ID " + id + " foi excluído com sucesso.");
       } else {
         System.out.println("Não foi possível excluir este usuário. Tente novamente.");
-        System.out.println("\nPressione enter para continuar...");
-        br.readLine();
-        Util.limparTela();
+        Util.mensagemContinuar();
       }
     } else {
       System.out.println("Usuário não encontrado.");
-      System.out.println("\nPressione enter para continuar...");
-      br.readLine();
-      Util.limparTela();
+      Util.mensagemContinuar();
     }
   }
 

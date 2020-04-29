@@ -80,10 +80,8 @@ public class CrudSugestao {
                 case 0: // não é necessário fazer nada
                     break;
                 default:
-                    System.out.println("Opção inválida. Tente novamente.");
-                    System.out.println("\nPressione enter para continuar...");
-                    br.readLine();
-                    Util.limparTela();
+                    Util.mensagemTenteNovamente();
+                    Util.mensagemContinuar();
             }
         } while (opcao != 0);
     }
@@ -128,9 +126,7 @@ public class CrudSugestao {
             }
         }
 
-        System.out.println("\nPressione enter para continuar...");
-        br.readLine();
-        Util.limparTela();
+        Util.mensagemContinuar();
     }
 
     // #endregion
@@ -157,9 +153,7 @@ public class CrudSugestao {
             System.out.println("   R$ " + sugestao.getValor());
             System.out.println("   " + sugestao.getObservacoes());
         }
-        System.out.println("\nPressione enter para continuar...");
-        br.readLine();
-        Util.limparTela();
+        Util.mensagemContinuar();
     }
 
     // #endregion
@@ -193,63 +187,63 @@ public class CrudSugestao {
             if (indiceSugestaoAAtualizar >= 0) {
                 Sugestao sugestaoAtualizada = sugestoes[indiceSugestaoAAtualizar].clone();
                 Util.limparTela();
-                int opcao;
-                do {
-                    opcao = exibirMenuAtualizacaoDados();
-
-                    switch (opcao) {
-                        case 1:
-                            System.out.print("\nNovo produto: ");
-                            String novoProduto = br.readLine();
-                            sugestaoAtualizada.setProduto(novoProduto);
-                            Util.limparTela();
-                            break;
-                        case 2:
-                            System.out.print("\nNova loja: ");
-                            String novaLoja = br.readLine();
-                            sugestaoAtualizada.setLoja(novaLoja);
-                            Util.limparTela();
-                            break;
-                        case 3:
-                            System.out.print("\nNovo valor: ");
-                            float novoValor = Float.parseFloat(br.readLine());
-                            sugestaoAtualizada.setValor(novoValor);
-                            Util.limparTela();
-                            break;
-                        case 4:
-                            System.out.print("\nNovas observações: ");
-                            String novasObservacoes = br.readLine();
-                            sugestaoAtualizada.setObservacoes(novasObservacoes);
-                            Util.limparTela();
-                            break;
-                        case 0:
-                            // verifica se houve alguma mudança; se sim, atualiza a sugestão
-                            if (!sugestaoAtualizada.equals(sugestoes[indiceSugestaoAAtualizar])) {
-                                boolean atualizado = (boolean) arquivoSugestoes.atualizar(sugestaoAtualizada);
-                                if (atualizado) {
-                                    System.out.println("\nSugestão atualizada com sucesso.");
-                                } else {
-                                    System.out.println(
-                                            "\nNão foi possível atualizar os dados nesse momento. Tente novamente.");
-                                }
-                            }
-                            // volta pro menu anterior
-                            break;
-                        default:
-                            System.out.println("Opção inválida. Tente novamente.\n");
-                            System.out.println("\nPressione enter para continuar...");
-                            br.readLine();
-                            Util.limparTela();
-                    }
-                } while (opcao != 0);
+                exibeMenuAtualizacaoSugestao(sugestoes, indiceSugestaoAAtualizar, sugestaoAtualizada);
             } else {
                 System.out.println("Usuário não encontrado.");
             }
 
-            System.out.println("\nPressione enter para continuar...");
-            br.readLine();
-            Util.limparTela();
+            Util.mensagemContinuar();
         }
+    }
+
+    private void exibeMenuAtualizacaoSugestao(Sugestao[] sugestoes, int indiceSugestaoAAtualizar,
+            Sugestao sugestaoAtualizada) throws IOException, Exception {
+        int opcao;
+        do {
+            opcao = exibirMenuAtualizacaoDados();
+
+            switch (opcao) {
+                case 1:
+                    System.out.print("\nNovo produto: ");
+                    String novoProduto = br.readLine();
+                    sugestaoAtualizada.setProduto(novoProduto);
+                    Util.limparTela();
+                    break;
+                case 2:
+                    System.out.print("\nNova loja: ");
+                    String novaLoja = br.readLine();
+                    sugestaoAtualizada.setLoja(novaLoja);
+                    Util.limparTela();
+                    break;
+                case 3:
+                    System.out.print("\nNovo valor: ");
+                    float novoValor = Float.parseFloat(br.readLine());
+                    sugestaoAtualizada.setValor(novoValor);
+                    Util.limparTela();
+                    break;
+                case 4:
+                    System.out.print("\nNovas observações: ");
+                    String novasObservacoes = br.readLine();
+                    sugestaoAtualizada.setObservacoes(novasObservacoes);
+                    Util.limparTela();
+                    break;
+                case 0:
+                    // verifica se houve alguma mudança; se sim, atualiza a sugestão
+                    if (!sugestaoAtualizada.equals(sugestoes[indiceSugestaoAAtualizar])) {
+                        boolean atualizado = (boolean) arquivoSugestoes.atualizar(sugestaoAtualizada);
+                        if (atualizado) {
+                            Util.mensagemSucessoAtualizacao();
+                        } else {
+                            Util.mensagemErroAtualizacao();
+                        }
+                    }
+                    // volta pro menu anterior
+                    break;
+                default:
+                    Util.mensagemTenteNovamente();
+                    Util.mensagemContinuar();
+            }
+        } while (opcao != 0);
     }
 
     /*
@@ -313,9 +307,7 @@ public class CrudSugestao {
             }
 
         }
-        System.out.println("\nPressione enter para continuar...");
-        br.readLine();
-        Util.limparTela();
+        Util.mensagemContinuar();
     }
     // #endregion
 }
