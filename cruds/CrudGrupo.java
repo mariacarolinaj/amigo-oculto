@@ -10,10 +10,11 @@ public class CrudGrupo {
     private static BufferedReader br = new BufferedReader(isr);
 
     private static Arquivo<Grupo> arquivoSugestoes;
+    private int idUsuarioLogado;
 
-    public CrudGrupo() {
+    public CrudGrupo(int idUsuarioLogado) {
         try {
-            this.inicializarBaseDados();
+            this.inicializarBaseDados(idUsuarioLogado);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -24,8 +25,9 @@ public class CrudGrupo {
      * eles não existam, são criados dentro da pasta "dados".
      */
 
-    private void inicializarBaseDados() {
+    private void inicializarBaseDados(int idUsuarioLogado) {
         try {
+            this.idUsuarioLogado = idUsuarioLogado;
             // tenta abrir os arquivos da base de dados caso existam;
             // se não existirem, são criados
             arquivoSugestoes = new Arquivo<>(Grupo.class.getConstructor(), "grupos.db");

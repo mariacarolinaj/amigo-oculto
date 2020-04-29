@@ -18,8 +18,15 @@ public class Sugestao implements Registro {
     public Sugestao() {
     }
 
-    public Sugestao(int idUsuario, String produto, String loja, float valor, String observacoes) {
-        this.setIdUsuario(idUsuario);
+    public Sugestao(String produto, String loja, float valor, String observacoes) {
+        this.setProduto(produto);
+        this.setLoja(loja);
+        this.setValor(valor);
+        this.setObservacoes(observacoes);
+    }
+
+    public Sugestao(int id, String produto, String loja, float valor, String observacoes) {
+        this.setID(id);
         this.setProduto(produto);
         this.setLoja(loja);
         this.setValor(valor);
@@ -105,6 +112,15 @@ public class Sugestao implements Registro {
         this.loja = entrada.readUTF();
         this.valor = entrada.readFloat();
         this.observacoes = entrada.readUTF();
+    }
+
+    public Sugestao clone() {
+        return new Sugestao(this.getID(), this.getProduto(), this.getLoja(), this.getValor(), this.getObservacoes());
+    }
+
+    public boolean equals(Sugestao sugestao) {
+        return sugestao.getLoja().equals(getLoja()) && sugestao.getProduto().equals(getProduto())
+                && sugestao.getObservacoes().equals(getObservacoes()) && sugestao.getValor() == getValor();
     }
 
 }

@@ -11,16 +11,20 @@ public class CrudConvite {
 
     private static Arquivo<Convite> arquivoConvites;
 
-    public CrudConvite() {
+    private int idUsuarioLogado;
+
+    public CrudConvite(int idUsuarioLogado) {
         try {
-            this.inicializarBaseDados();
+            this.idUsuarioLogado = idUsuarioLogado;
+            this.inicializarBaseDados(idUsuarioLogado);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void inicializarBaseDados() {
+    private void inicializarBaseDados(int idUsuarioLogado) {
         try {
+            this.idUsuarioLogado = idUsuarioLogado;
             // tenta abrir os arquivos da base de dados caso existam; se não existirem, são
             // criados
             arquivoConvites = new Arquivo<>(Convite.class.getConstructor(), "convites.db");

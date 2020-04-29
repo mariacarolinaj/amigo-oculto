@@ -45,7 +45,7 @@ public class CrudUsuario {
    * realizado com sucesso retorna true; caso contrário retorna false.
    */
 
-  public boolean logar() throws Exception {
+  public Usuario logar() throws Exception {
     String email, senha;
     System.out.println("ACESSO AO SISTEMA");
     System.out.print("\nE-mail: ");
@@ -62,7 +62,7 @@ public class CrudUsuario {
       if (usuario != null) {
         if (usuario.getSenha().equals(senha)) {
           System.out.println("Bem vindo(a), " + usuario.getNome() + "\n");
-          return true; // usuario logado
+          return usuario; // usuario logado
         } else {
           System.out.println("Senha incorreta!");
         }
@@ -78,7 +78,7 @@ public class CrudUsuario {
     System.out.println("\nPressione enter para continuar...");
     br.readLine();
     Util.limparTela();
-    return false; // não conseguiu logar
+    return null; // não conseguiu logar
   }
 
   // #region CREATE
@@ -198,15 +198,12 @@ public class CrudUsuario {
               boolean atualizado = (boolean) arquivoUsuarios.atualizar(usuarioAtualizado);
               if (atualizado) {
                 System.out.println("Usuário atualizado com sucesso.");
-                System.out.println("\nPressione enter para continuar...");
-                br.readLine();
-                Util.limparTela();
               } else {
                 System.out.println("Não foi possível atualizar os dados nesse momento. Tente novamente.");
-                System.out.println("\nPressione enter para continuar...");
-                br.readLine();
-                Util.limparTela();
               }
+              System.out.println("\nPressione enter para continuar...");
+              br.readLine();
+              Util.limparTela();
             }
             // volta pro menu anterior
             break;
@@ -285,6 +282,6 @@ public class CrudUsuario {
       Util.limparTela();
     }
   }
-  
+
   // #endregion
 }

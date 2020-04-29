@@ -7,6 +7,7 @@
 
 import java.io.*;
 import cruds.*;
+import entidades.Usuario;
 import util.Util;
 
 public class AmigoOculto {
@@ -20,8 +21,7 @@ public class AmigoOculto {
     private static CrudConvite crudConvite;
 
     public static void main(String[] args) throws IOException {
-        inicializarServicos();
-
+        crudUsuario = new CrudUsuario();
         try {
             exibeMenuInicial();
         } catch (Exception e) {
@@ -34,11 +34,10 @@ public class AmigoOculto {
      * utilizados nas operações.
      */
 
-    private static void inicializarServicos() {
-        crudUsuario = new CrudUsuario();
-        crudSugestao = new CrudSugestao();
-        crudGrupo = new CrudGrupo();
-        crudConvite = new CrudConvite();
+    private static void inicializarServicos(int idUsuarioLogado) {
+        crudSugestao = new CrudSugestao(idUsuarioLogado);
+        crudGrupo = new CrudGrupo(idUsuarioLogado);
+        crudConvite = new CrudConvite(idUsuarioLogado);
     }
 
     /*
@@ -67,8 +66,10 @@ public class AmigoOculto {
 
             switch (opcao) {
                 case 1:
-                    boolean sucessoAoLogar = crudUsuario.logar();
+                    Usuario usuarioLogado = crudUsuario.logar();
+                    boolean sucessoAoLogar = usuarioLogado != null;
                     if (sucessoAoLogar) {
+                        inicializarServicos(usuarioLogado.getID());
                         exibeMenuUsuarioLogado();
                     }
                     break;
@@ -92,7 +93,7 @@ public class AmigoOculto {
      * o método correspondente.
      */
 
-    public static void exibeMenuUsuarioLogado() throws NumberFormatException, IOException {
+    public static void exibeMenuUsuarioLogado() throws Exception {
         int opcao;
         do {
             System.out.println("INÍCIO\n");
@@ -109,6 +110,7 @@ public class AmigoOculto {
 
             switch (opcao) {
                 case 1:
+                    crudSugestao.exibeMenuSugestoes();
                     break;
                 case 2:
                     break;
