@@ -110,14 +110,15 @@ public class CrudUsuario {
         usuario.setID(novoId);
         // cria indice secundario
         arquivoChaveSecundariaUsuario.incluir(new ChaveSecundariaUsuario(usuario.getID(), usuario.getEmail()));
+        Util.mensagemSucessoCadastro();
       } catch (Exception e) {
-        e.printStackTrace();
+        Util.mensagemErroCadastro();
       }
-      System.out.println("\nUsuário cadastrado com sucesso.");
     } else {
       System.out.print("\nO e-mail informado já está associado a outro usuário.");
       System.out.println("Tente novamente com um e-mail válido.");
     }
+
     Util.mensagemContinuar();
   }
 
@@ -259,15 +260,15 @@ public class CrudUsuario {
       arquivoChaveSecundariaUsuario.excluir(idChaveSecundariaAExcluir);
 
       if (excluido) {
-        System.out.println("O usuario de ID " + id + " foi excluído com sucesso.");
+        Util.mensagemSucessoExclusao();
       } else {
-        System.out.println("Não foi possível excluir este usuário. Tente novamente.");
-        Util.mensagemContinuar();
+        Util.mensagemErroExclusao();
       }
     } else {
       System.out.println("Usuário não encontrado.");
-      Util.mensagemContinuar();
     }
+
+    Util.mensagemContinuar();
   }
 
   // #endregion

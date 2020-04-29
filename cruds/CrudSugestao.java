@@ -93,7 +93,7 @@ public class CrudSugestao {
      * sugestão de presente vinculada ao usuário logado
      */
 
-    public void criarSugestao() throws Exception {
+    public void criarSugestao() throws IOException {
         String produto, loja, observacoes;
         float preco;
 
@@ -118,11 +118,16 @@ public class CrudSugestao {
             System.out.print("\nConfirmar inclusão de " + produto + "? (S/N) ");
             char confirmacao = br.readLine().charAt(0);
             if (confirmacao == 's' || confirmacao == 'S') {
-                // insere sugestão no arquivo de sugestões
-                int idSugestaoInserida = arquivoSugestoes.incluir(sugestao);
-                // cria chave na arvore b+ da nova sugestão ao usuário logado
-                chavesSugestaoUsuario.inserir(this.idUsuarioLogado, idSugestaoInserida);
-                System.out.println("\nSugestão incluída com sucesso");
+                try {
+
+                    // insere sugestão no arquivo de sugestões
+                    int idSugestaoInserida = arquivoSugestoes.incluir(sugestao);
+                    // cria chave na arvore b+ da nova sugestão ao usuário logado
+                    chavesSugestaoUsuario.inserir(this.idUsuarioLogado, idSugestaoInserida);
+                    Util.mensagemSucessoCadastro();
+                } catch (Exception e) {
+                    Util.mensagemErroCadastro();
+                }
             }
         }
 
@@ -293,16 +298,19 @@ public class CrudSugestao {
 
             if (indiceSugestaoAExcluir >= 0) {
                 Sugestao sugestaoAExcluir = sugestoes[indiceSugestaoAExcluir].clone();
-                Util.limparTela();
 
-                boolean excluido = arquivoSugestoes.excluir(sugestaoAExcluir.getID())
-                        && chavesSugestaoUsuario.excluir(this.idUsuarioLogado, sugestaoAExcluir.getID());
+                System.out.print("\nConfirmar inclusão de " + sugestaoAExcluir.getProduto() + "? (S/N) ");
+                char confirmacao = br.readLine().charAt(0);
 
-                if (excluido) {
-                    System.out.println("A sugestão foi excluída com sucesso.");
-                } else {
-                    System.out.println("Não foi possível excluir essa sugestão. Tente novamente.");
+                if (confirmacao == 's' || confirmacao == 'S') {
+                    boolean excluido = arquivoSugestoes.excluir(sugestaoAExcluir.getID())
+                            && chavesSugestaoUsuario.excluir(this.idUsuarioLogado, sugestaoAExcluir.getID());
 
+                    if (excluido) {
+                        Util.mensagemSucessoExclusao();
+                    } else {
+                        Util.mensagemErroExclusao();
+                    }
                 }
             }
 

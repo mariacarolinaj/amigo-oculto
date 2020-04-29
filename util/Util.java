@@ -43,4 +43,20 @@ public class Util {
     public static void mensagemSucessoAtualizacao() {
         System.out.println("\nDados atualizados com sucesso.");
     }
+
+    public static void mensagemErroExclusao() {
+        System.out.println("\nNão foi possível realizar a exclusão no momento. Tente novamente.");
+    }
+
+    public static void mensagemSucessoExclusao() {
+        System.out.println("\nExclusão concluída com sucesso.");
+    }
+
+    public static void mensagemErroCadastro() {
+        System.out.println("\nNão foi possível cadastrar os dados informados no momento. Tente novamente.");
+    }
+
+    public static void mensagemSucessoCadastro() {
+        System.out.println("\nCadastro realizado com sucesso.");
+    }
 }
