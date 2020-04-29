@@ -21,8 +21,8 @@ public class CrudSugestao {
 
     private void inicializarBaseDados() {
         try {
-            // tenta abrir os arquivos da base de dados caso existam; se não existirem, são
-            // criados
+            // tenta abrir os arquivos da base de dados caso existam;
+            // se não existirem, são criados
             arquivoSugestoes = new Arquivo<>(Sugestao.class.getConstructor(), "sugestoes.db");
 
         } catch (Exception e) {
