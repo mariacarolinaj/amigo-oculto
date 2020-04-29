@@ -19,6 +19,11 @@ public class CrudGrupo {
         }
     }
 
+    /*
+     * Método inicializarBaseDados(): tenta abrir os arquivos da base de dados. Caso
+     * eles não existam, são criados dentro da pasta "dados".
+     */
+
     private void inicializarBaseDados() {
         try {
             // tenta abrir os arquivos da base de dados caso existam;
