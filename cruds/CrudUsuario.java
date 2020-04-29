@@ -104,7 +104,7 @@ public class CrudUsuario {
     // verifica se o e-mail já foi utilizado
     boolean emailJaUtilizado = arquivoChaveSecundariaUsuario.buscarChaveSecundariaUsuario(email) != null;
 
-    if (emailJaUtilizado) {
+    if (!emailJaUtilizado) {
       try {
         // armazena novo usuário
         int novoId = arquivoUsuarios.incluir(usuario);
