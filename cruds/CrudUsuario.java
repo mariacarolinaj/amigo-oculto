@@ -21,10 +21,14 @@ public class CrudUsuario {
     }
   }
 
+  /*
+   * Método inicializarBaseDados(): tenta abrir os arquivos da base de dados. Caso
+   * eles não existam, são criados dentro da pasta "dados".
+   */
+
   private void inicializarBaseDados() {
     try {
-      // tenta abrir os arquivos da base de dados caso existam; se não existirem, são
-      // criados
+
       arquivoUsuarios = new Arquivo<>(Usuario.class.getConstructor(), "usuarios.db");
       arquivoChaveSecundariaUsuario = new Arquivo<>(ChaveSecundariaUsuario.class.getConstructor(),
           "chavesSecundariasUsuario.db");
@@ -33,6 +37,13 @@ public class CrudUsuario {
       e.printStackTrace();
     }
   }
+
+  /*
+   * Método logar(): Realiza leitura do e-mail e senha, e busca pelo e-mail no
+   * arquivo de chave secundária de usuário. Caso encontre um id relacionado ao
+   * e-mail inserido, compara a senha informada com a existente: se o login for
+   * realizado com sucesso retorna true; caso contrário retorna false.
+   */
 
   public boolean logar() throws Exception {
     String email, senha;
@@ -72,6 +83,12 @@ public class CrudUsuario {
 
   // #region CREATE
 
+  /*
+   * Método criarUsuario(): Realiza leitura do nome, e-mail e senha. Verifica se
+   * já existe um usuário utilizando o e-mail informado e caso não exista,
+   * armazena os dados do novo usuário.
+   */
+
   public void criarUsuario() throws Exception {
     String nome, email, senha;
     System.out.println("NOVO USUÁRIO");
@@ -84,17 +101,24 @@ public class CrudUsuario {
 
     Usuario usuario = new Usuario(nome, email, senha);
 
-    try {
-      // armazena novo usuário
-      int novoId = arquivoUsuarios.incluir(usuario);
-      usuario.setID(novoId);
-      // cria indice secundario
-      arquivoChaveSecundariaUsuario.incluir(new ChaveSecundariaUsuario(usuario.getID(), usuario.getEmail()));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    // verifica se o e-mail já foi utilizado
+    boolean emailJaUtilizado = arquivoChaveSecundariaUsuario.buscarChaveSecundariaUsuario(email) != null;
 
-    System.out.println("\nUsuário cadastrado com sucesso.");
+    if (emailJaUtilizado) {
+      try {
+        // armazena novo usuário
+        int novoId = arquivoUsuarios.incluir(usuario);
+        usuario.setID(novoId);
+        // cria indice secundario
+        arquivoChaveSecundariaUsuario.incluir(new ChaveSecundariaUsuario(usuario.getID(), usuario.getEmail()));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      System.out.println("\nUsuário cadastrado com sucesso.");
+    } else {
+      System.out.print("\nO e-mail informado já está associado a outro usuário.");
+      System.out.println("Tente novamente com um e-mail válido.");
+    }
     System.out.println("\nPressione enter para continuar...");
     br.readLine();
     Util.limparTela();
@@ -103,6 +127,11 @@ public class CrudUsuario {
   // #endregion
 
   // #region READ
+
+  /*
+   * Método buscarUsuario(): Realiza leitura de um ID e, caso o encontre no
+   * arquivo de usuários, exibe seus dados na tela.
+   */
 
   public void buscarUsuario() throws Exception {
     System.out.println("Informe o ID do usuário que deseja visualizar: ");
@@ -122,6 +151,14 @@ public class CrudUsuario {
   // #endregion
 
   // #region UPDATE
+
+  /*
+   * Método atualizarUsuario(): realiza leitura do ID do usuário que se deseja
+   * alterar as informações. Caso o usuário exista, exibe um menu para que ele
+   * escolha qual informação deseja alterar e, ao sair dessa sessão, armazena os
+   * dados alterados.
+   */
+
   public void atualizarUsuario() throws Exception {
     System.out.println("Informe o ID do usuário que deseja atualizar: ");
     int id = Integer.parseInt(br.readLine());
@@ -188,6 +225,11 @@ public class CrudUsuario {
     }
   }
 
+  /*
+   * Método exibirMenuAtualizacaoDados(): exibe menu com as opções de atualização
+   * dos dados do usuário.
+   */
+
   private int exibirMenuAtualizacaoDados() throws IOException {
     int opcao;
     System.out.println("Informe qual atributo deseja alterar:");
@@ -206,6 +248,13 @@ public class CrudUsuario {
   // #endregion
 
   // #region DELETE
+
+  /*
+   * Método deletarUsuario(): realiza leitura do ID do usuário que deseja excluir.
+   * Busca por ele no arquivo de usuários e, caso encontre seu registro o apaga e
+   * depois apaga sua chave secundária do arquivo correspondente.
+   */
+
   public void deletarUsuario() throws Exception {
     System.out.println("Informe o ID do usuário que deseja remover: ");
     int id = Integer.parseInt(br.readLine());
@@ -216,6 +265,11 @@ public class CrudUsuario {
 
     if (usuarioExistente != null) {
       boolean excluido = arquivoUsuarios.excluir(id);
+      // procura pelo ID correspondente na chave secundária e em seguida a apaga
+      int idChaveSecundariaAExcluir = arquivoChaveSecundariaUsuario
+          .buscarChaveSecundariaUsuario(usuarioExistente.getEmail()).getID();
+      arquivoChaveSecundariaUsuario.excluir(idChaveSecundariaAExcluir);
+
       if (excluido) {
         System.out.println("O usuario de ID " + id + " foi excluído com sucesso.");
       } else {
@@ -231,5 +285,6 @@ public class CrudUsuario {
       Util.limparTela();
     }
   }
+  
   // #endregion
 }
