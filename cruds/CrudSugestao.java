@@ -194,7 +194,7 @@ public class CrudSugestao {
                 Util.limparTela();
                 exibeMenuAtualizacaoSugestao(sugestoes, indiceSugestaoAAtualizar, sugestaoAtualizada);
             } else {
-                System.out.println("Usuário não encontrado.");
+                System.out.println("Índice inválido.");
             }
 
             Util.mensagemContinuar();

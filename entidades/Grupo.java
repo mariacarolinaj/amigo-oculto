@@ -34,6 +34,35 @@ public class Grupo implements Registro {
         this.setAtivo(ativo);
     }
 
+    public Grupo(int id, int idUsuarioCriador, String nome, long momentoSorteio, float valor, long momentoEncontro,
+            String localEncontro, String observacoes, boolean sorteado, boolean ativo) {
+        this.setID(id);
+        this.setIdUsuarioCriador(idUsuarioCriador);
+        this.setNome(nome);
+        this.setMomentoSorteio(momentoSorteio);
+        this.setValor(valor);
+        this.setMomentoEncontro(momentoEncontro);
+        this.setLocalEncontro(localEncontro);
+        this.setObservacoes(observacoes);
+        this.setSorteado(sorteado);
+        this.setAtivo(ativo);
+    }
+
+    public Grupo clone() {
+        return new Grupo(this.getID(), this.getIdUsuarioCriador(), this.getNome(), this.getMomentoSorteio(),
+                this.getValor(), this.getMomentoEncontro(), this.getLocalEncontro(), this.getObservacoes(),
+                this.isSorteado(), this.isAtivo());
+    }
+
+    public boolean equals(Grupo grupo) {
+        return this.getIdUsuarioCriador() == grupo.getIdUsuarioCriador() && this.getNome() == grupo.getNome()
+                && this.getMomentoSorteio() == grupo.getMomentoSorteio() && this.getValor() == grupo.getValor()
+                && this.getMomentoEncontro() == grupo.getMomentoEncontro()
+                && this.getLocalEncontro() == grupo.getLocalEncontro()
+                && this.getObservacoes() == grupo.getObservacoes() && this.isSorteado() == grupo.isSorteado()
+                && this.isAtivo() == grupo.isAtivo();
+    }
+
     public boolean isAtivo() {
         return ativo;
     }

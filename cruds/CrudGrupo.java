@@ -1,8 +1,6 @@
 package cruds;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import entidades.Grupo;
@@ -139,6 +137,7 @@ public class CrudGrupo {
                     this.criarGrupo();
                     break;
                 case 3:
+                    this.atualizarGrupo();
                     break;
                 case 4:
                     break;
@@ -198,7 +197,7 @@ public class CrudGrupo {
                     observacoes = br.readLine();
 
                     Grupo grupo = new Grupo(this.idUsuarioLogado, nome, momentoSorteio, valor, momentoEncontro,
-                            localEncontro, observacoes, false, false);
+                            localEncontro, observacoes, false, true);
 
                     System.out.print("\nConfirmar inclusão do grupo " + nome + "? (S/N) ");
                     char confirmacao = br.readLine().charAt(0);
@@ -232,19 +231,174 @@ public class CrudGrupo {
 
     public void listarGrupos() throws Exception {
         int[] idsGrupos = chavesGruposUsuario.lista(this.idUsuarioLogado);
+        int indiceInsercao = 0;
+        Grupo[] grupos = new Grupo[idsGrupos.length];
         System.out.println("MEUS GRUPOS\n");
-
-        if (idsGrupos.length == 0) {
-            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
-        }
 
         for (int i = 0; i < idsGrupos.length; i++) {
             Grupo grupo = (Grupo) arquivoGrupos.buscar(idsGrupos[i]);
-            System.out.println((i + 1) + ". " + grupo.getNome());
+            if (grupo.isAtivo()) {
+                grupos[indiceInsercao++] = grupo;
+            }
         }
+
+        if (indiceInsercao == 0) {
+            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+        }
+
+        for (int i = 0; i < indiceInsercao; i++) {
+            System.out.println((i + 1) + ". " + grupos[i].getNome());
+        }
+
         Util.mensagemContinuar();
     }
 
     // #endregion
 
+    // #region UPDATE
+
+    /*
+     * Método atualizarGrupo(): realiza leitura do grupo que se deseja alterar as
+     * informações. Depois, exibe um menu para que o usuário escolha qual informação
+     * deseja alterar e, ao sair dessa sessão, armazena os dados alterados.
+     */
+
+    public void atualizarGrupo() throws Exception {
+        int[] idsGrupos = chavesGruposUsuario.lista(this.idUsuarioLogado);
+        int indiceInsercao = 0;
+        Grupo[] grupos = new Grupo[idsGrupos.length];
+
+        System.out.println("ATUALIZAR GRUPO\n");
+
+        for (int i = 0; i < idsGrupos.length; i++) {
+            Grupo grupo = (Grupo) arquivoGrupos.buscar(idsGrupos[i]);
+            if (grupo.isAtivo()) {
+                grupos[indiceInsercao++] = grupo;
+            }
+        }
+
+        if (indiceInsercao == 0) {
+            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+        } else {
+            for (int i = 0; i < indiceInsercao; i++) {
+                System.out.println((i + 1) + ". " + grupos[i].getNome());
+            }
+            System.out.print("\nInforme o número do grupo que deseja atualizar ou 0 para retornar ao menu anterior: ");
+            int indiceGrupoAAtualizar = Integer.parseInt(br.readLine()) - 1;
+
+            if (indiceGrupoAAtualizar >= 0) {
+                Grupo grupoAtualizado = grupos[indiceGrupoAAtualizar].clone();
+                Util.limparTela();
+                this.exibeMenuAtualizacaoGrupo(grupos, indiceGrupoAAtualizar, grupoAtualizado);
+            } else {
+                System.out.println("Índice inválido.");
+            }
+        }
+
+        Util.mensagemContinuar();
+    }
+
+    /*
+     * Método exibirMenuAtualizacaoDados(): exibe menu com as opções de atualização
+     * dos dados do usuário.
+     */
+
+    private int exibirMenuAtualizacaoDados() throws IOException {
+        int opcao;
+        System.out.println("Informe qual atributo deseja alterar:\n");
+        System.out.println("1: Nome");
+        System.out.println("2: Data do sorteio");
+        System.out.println("3: Valor médio dos presentes");
+        System.out.println("4: Data do encontro");
+        System.out.println("5: Local do encontro");
+        System.out.println("6: Observações");
+        System.out.println("0: Salvar alterações e voltar para o menu anterior");
+
+        System.out.print("\nIr para: ");
+        opcao = Integer.parseInt(br.readLine());
+
+        return opcao;
+    }
+
+    private void exibeMenuAtualizacaoGrupo(Grupo[] grupos, int indiceGrupoAAtualizar, Grupo grupoAtualizado)
+            throws Exception {
+        int opcao;
+        do {
+            opcao = exibirMenuAtualizacaoDados();
+
+            switch (opcao) {
+                case 1:
+                    System.out.print("\nNovo nome: ");
+                    String novoNome = br.readLine();
+                    grupoAtualizado.setNome(novoNome);
+                    Util.limparTela();
+                    break;
+                case 2:
+                    System.out.print(
+                            "\nNova data do sorteio (insira no formato DD-MM-AAAA; não deve ser inferior à data atual): ");
+                    String dataSorteio = br.readLine();
+                    // verifica se a data inserida é valida
+                    Date objetoDataSorteio = Util.validarEMontarData(dataSorteio);
+                    if (objetoDataSorteio != null && objetoDataSorteio.getTime() > System.currentTimeMillis()
+                            && objetoDataSorteio.getTime() < grupoAtualizado.getMomentoEncontro()) {
+                        // data do sorteio válida
+                        grupoAtualizado.setMomentoSorteio(objetoDataSorteio.getTime());
+                    } else {
+                        System.out.println("\nData inválida. Tente novamente.");
+                    }
+                    Util.limparTela();
+                    break;
+                case 3:
+                    System.out.print("\nNovo valor médio dos presentes: ");
+                    float novoValor = Float.parseFloat(br.readLine());
+                    grupoAtualizado.setValor(novoValor);
+                    Util.limparTela();
+                    break;
+                case 4:
+                    System.out.print(
+                            "\nNova data do encontro (insira no formato DD-MM-AAAA; não deve ser inferior à data atual): ");
+                    String dataEncontro = br.readLine();
+                    // verifica se a data inserida é valida
+                    Date objetoDataEncontro = Util.validarEMontarData(dataEncontro);
+                    if (objetoDataEncontro != null
+                            && objetoDataEncontro.getTime() > grupoAtualizado.getMomentoSorteio()) {
+                        // data do encontro válida
+                        grupoAtualizado.setMomentoEncontro(objetoDataEncontro.getTime());
+                    } else {
+                        System.out.println("\nData inválida. Tente novamente.");
+                    }
+                    Util.limparTela();
+                    break;
+                case 5:
+                    System.out.print("\nNovo local do encontro: ");
+                    String novoLocal = br.readLine();
+                    grupoAtualizado.setLocalEncontro(novoLocal);
+                    Util.limparTela();
+                    break;
+                case 6:
+                    System.out.print("\nNovas observações: ");
+                    String novasObservacoes = br.readLine();
+                    grupoAtualizado.setObservacoes(novasObservacoes);
+                    Util.limparTela();
+                    break;
+                case 0:
+                    // verifica se houve alguma mudança; se sim, atualiza a sugestão
+                    if (!grupoAtualizado.equals(grupos[indiceGrupoAAtualizar])) {
+                        boolean atualizado = (boolean) arquivoGrupos.atualizar(grupoAtualizado);
+                        if (atualizado) {
+                            Util.mensagemSucessoAtualizacao();
+                        } else {
+                            Util.mensagemErroAtualizacao();
+                        }
+                    }
+                    // volta pro menu anterior
+                    break;
+                default:
+                    Util.mensagemTenteNovamente();
+                    Util.mensagemContinuar();
+            }
+        } while (opcao != 0);
+    }
+
+    // #endregion
 }
