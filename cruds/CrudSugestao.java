@@ -119,7 +119,6 @@ public class CrudSugestao {
             char confirmacao = br.readLine().charAt(0);
             if (confirmacao == 's' || confirmacao == 'S') {
                 try {
-
                     // insere sugestão no arquivo de sugestões
                     int idSugestaoInserida = arquivoSugestoes.incluir(sugestao);
                     // cria chave na arvore b+ da nova sugestão ao usuário logado

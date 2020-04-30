@@ -15,11 +15,13 @@ public class CrudGrupo {
     private static Arquivo<Grupo> arquivoGrupos;
     private static ArvoreB chavesGruposUsuario;
 
+    private static CrudConvite crudConvite;
     private int idUsuarioLogado;
 
-    public CrudGrupo(int idUsuarioLogado) {
+    public CrudGrupo(int idUsuarioLogado, CrudConvite cc) {
         try {
             this.inicializarBaseDados(idUsuarioLogado);
+            crudConvite = cc;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,6 +101,7 @@ public class CrudGrupo {
                     this.exibeMenuManipulacaoGrupos();
                     break;
                 case 2:
+                    crudConvite.exibeMenuConvite();
                     break;
                 case 3:
                     break;
@@ -252,6 +255,73 @@ public class CrudGrupo {
         }
 
         Util.mensagemContinuar();
+    }
+
+    public Grupo listarESelecionarGrupoAtivo() throws Exception {
+        int[] idsGrupos = chavesGruposUsuario.lista(this.idUsuarioLogado);
+        int indiceInsercao = 0;
+        Grupo[] grupos = new Grupo[idsGrupos.length];
+        Grupo grupoSelecionado = null;
+
+        for (int i = 0; i < idsGrupos.length; i++) {
+            Grupo grupo = (Grupo) arquivoGrupos.buscar(idsGrupos[i]);
+            if (grupo.isAtivo()) {
+                grupos[indiceInsercao++] = grupo;
+            }
+        }
+
+        if (indiceInsercao == 0) {
+            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+        } else {
+            for (int i = 0; i < indiceInsercao; i++) {
+                System.out.println((i + 1) + ". " + grupos[i].getNome());
+            }
+            System.out.print("\nGrupo: ");
+            int indiceGrupoEscolhido = Integer.parseInt(br.readLine()) - 1;
+
+            if (indiceGrupoEscolhido >= 0) {
+                grupoSelecionado = grupos[indiceGrupoEscolhido].clone();
+                Util.limparTela();
+            } else {
+                System.out.println("Índice inválido.");
+                Util.mensagemContinuar();
+            }
+        }
+        return grupoSelecionado;
+    }
+
+    public Grupo listarESelecionarGrupoAtivoNaoSorteado() throws Exception {
+        int[] idsGrupos = chavesGruposUsuario.lista(this.idUsuarioLogado);
+        int indiceInsercao = 0;
+        Grupo[] grupos = new Grupo[idsGrupos.length];
+        Grupo grupoSelecionado = null;
+
+        for (int i = 0; i < idsGrupos.length; i++) {
+            Grupo grupo = (Grupo) arquivoGrupos.buscar(idsGrupos[i]);
+            if (grupo.isAtivo() && grupo.getMomentoSorteio() > System.currentTimeMillis()) {
+                grupos[indiceInsercao++] = grupo;
+            }
+        }
+
+        if (indiceInsercao == 0) {
+            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+        } else {
+            for (int i = 0; i < indiceInsercao; i++) {
+                System.out.println((i + 1) + ". " + grupos[i].getNome());
+            }
+            System.out.print("\nGrupo: ");
+            int indiceGrupoEscolhido = Integer.parseInt(br.readLine()) - 1;
+
+            if (indiceGrupoEscolhido >= 0) {
+                grupoSelecionado = grupos[indiceGrupoEscolhido].clone();
+                Util.limparTela();
+            } else {
+                System.out.println("Índice inválido.");
+                Util.mensagemContinuar();
+            }
+        }
+
+        return grupoSelecionado;
     }
 
     // #endregion

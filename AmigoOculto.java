@@ -36,8 +36,9 @@ public class AmigoOculto {
 
     private static void inicializarServicos(int idUsuarioLogado) {
         crudSugestao = new CrudSugestao(idUsuarioLogado);
-        crudGrupo = new CrudGrupo(idUsuarioLogado);
         crudConvite = new CrudConvite(idUsuarioLogado);
+        crudGrupo = new CrudGrupo(idUsuarioLogado, crudConvite);
+        crudConvite.inicializarBaseDados(idUsuarioLogado, crudGrupo);
     }
 
     /*
@@ -112,7 +113,7 @@ public class AmigoOculto {
                     crudSugestao.exibeMenuSugestoes();
                     break;
                 case 2:
-                    crudGrupo.exibeMenuGrupos();
+                    crudGrupo.exibeMenuGerenciamento();
                     break;
                 case 3:
                     break;
