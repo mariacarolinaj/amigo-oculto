@@ -146,6 +146,9 @@ public class CrudUsuario {
     }
   }
 
+  public Usuario obterUsuarioPorId(int id) throws Exception {
+    return (Usuario) arquivoUsuarios.buscar(id);
+  }
   // #endregion
 
   // #region UPDATE

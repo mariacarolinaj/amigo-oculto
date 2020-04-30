@@ -1,11 +1,12 @@
 package cruds;
 
 import java.io.*;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import entidades.Convite;
 import entidades.Grupo;
+import entidades.Usuario;
 import util.Util;
 
 public class CrudConvite {
@@ -19,20 +20,21 @@ public class CrudConvite {
     private static ArvoreB chavesGruposUsuario;
     private static ListaInvertida convitesPendentes;
     private static CrudGrupo crudGrupo;
-    private int idUsuarioLogado;
+    private static CrudUsuario crudUsuario;
+    private Usuario usuarioLogado;
 
-    public CrudConvite(int idUsuarioLogado) {
+    public CrudConvite(Usuario usuarioLogado) {
         try {
-            this.idUsuarioLogado = idUsuarioLogado;
+            this.usuarioLogado = usuarioLogado;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void inicializarBaseDados(int idUsuarioLogado, CrudGrupo cg) {
+    public void inicializarBaseDados(CrudGrupo cg, CrudUsuario cu) {
         try {
-            this.idUsuarioLogado = idUsuarioLogado;
             crudGrupo = cg;
+            crudUsuario = cu;
             // tenta abrir os arquivos da base de dados caso existam; se não existirem, são
             // criados
             arquivoConvites = new Arquivo<>(Convite.class.getConstructor(), "convites.db");
@@ -90,12 +92,12 @@ public class CrudConvite {
             Util.limparTela();
             System.out.println("GRUPO \"" + grupoSelecionado.getNome() + "\"");
             System.out.println(
-                    "Para sair do cadastro e emissão de convites, deixe o campo e-mail em branco e tecle ENTER\n");
+                    "Para sair do cadastro e emissão de convites, deixe o campo e-mail em branco e tecle ENTER");
             Convite[] convitesExistentes = this.obterConvitesExistentesPorGrupo(grupoSelecionado);
             String email;
 
             do {
-                System.out.print("E-mail: ");
+                System.out.print("\nE-mail: ");
                 email = br.readLine();
 
                 Convite emailJaConvidado = this.verificarSeEmailJaFoiConvidado(email, convitesExistentes);
@@ -108,7 +110,7 @@ public class CrudConvite {
                         } else if (emailJaConvidado.getEstado() == 2 || emailJaConvidado.getEstado() == 3) {
                             System.out.println(
                                     "\nO e-mail informado já possui um convite emitido por este grupo no estado recusado ou cancelado.");
-                            System.out.println("Deseja reemitir o convite? (S/N)");
+                            System.out.print("Deseja reemitir o convite? (S/N)");
                             char confirmacao = br.readLine().charAt(0);
                             if (confirmacao == 's' || confirmacao == 'S') {
                                 emitirConvite(grupoSelecionado, email);
@@ -127,12 +129,11 @@ public class CrudConvite {
 
     private void emitirConvite(Grupo grupoSelecionado, String email) {
         try {
-
             Convite conviteAEmitir = new Convite(grupoSelecionado.getID(), email, System.currentTimeMillis(), (byte) 0);
             int indiceConviteEmitido = arquivoConvites.incluir(conviteAEmitir);
             chavesGruposUsuario.inserir(grupoSelecionado.getID(), indiceConviteEmitido);
             convitesPendentes.create(conviteAEmitir.getEmail(), indiceConviteEmitido);
-            System.out.println("\nConvite emitido com sucesso.\n");
+            System.out.println("\nConvite emitido com sucesso.");
         } catch (Exception e) {
             System.out.println("\nNão foi possível emitir o convite no momento. Tente novamente.");
         }
@@ -162,6 +163,10 @@ public class CrudConvite {
     // #endregion
 
     // #region READ
+
+    public int obterQuantidadeConvitesPendentes() throws IOException {
+        return convitesPendentes.read(this.usuarioLogado.getEmail()).length;
+    }
 
     public void listarConvites() throws Exception {
         System.out.println("ESCOLHA O GRUPO:\n");
@@ -259,8 +264,8 @@ public class CrudConvite {
 
             if (indiceConviteACancelar >= 0 && indiceConviteACancelar < convites.length) {
                 Convite conviteACancelar = convites[indiceConviteACancelar];
-                System.out.print(
-                        "\nConfirmar cancelamento do convite enviado para " + conviteACancelar.getEmail() + "? (S/N): ");
+                System.out.print("\nConfirmar cancelamento do convite enviado para " + conviteACancelar.getEmail()
+                        + "? (S/N): ");
                 char confirmacao = br.readLine().charAt(0);
 
                 if (confirmacao == 's' || confirmacao == 'S') {
@@ -285,4 +290,95 @@ public class CrudConvite {
 
     // #endregion
 
+    public void verificarConvitesPendentes() throws Exception {
+        int[] idsConvitesPendentes;
+        char opcao = 'v';
+        int indiceConvite = -1;
+        do {
+            idsConvitesPendentes = convitesPendentes.read(this.usuarioLogado.getEmail());
+            Convite[] convites = new Convite[idsConvitesPendentes.length];
+            Grupo[] grupos = new Grupo[idsConvitesPendentes.length];
+            String[] nomesCriadoresGrupos = new String[idsConvitesPendentes.length];
+
+            if (idsConvitesPendentes.length > 0) {
+                for (int i = 0; i < idsConvitesPendentes.length; i++) {
+                    convites[i] = (Convite) arquivoConvites.buscar(idsConvitesPendentes[i]);
+                    grupos[i] = crudGrupo.obterGrupoPorId(convites[i].getIdGrupo());
+                    nomesCriadoresGrupos[i] = crudUsuario.obterUsuarioPorId(grupos[i].getIdUsuarioCriador()).getNome();
+                }
+
+                System.out.println("VOCÊ FOI CONVIDADO PARA PARTICIPAR DOS GRUPOS ABAIXO.");
+                System.out.println("ESCOLHA QUAL CONVITE DESEJA ACEITAR OU RECUSAR:\n");
+
+                for (int i = 0; i < idsConvitesPendentes.length; i++) {
+                    System.out.println((i + 1) + ". " + grupos[i].getNome());
+
+                    Date data = new Date(convites[i].getMomentoConvite());
+                    SimpleDateFormat dataFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    String dataString = dataFormat.format(data);
+
+                    System.out.println(
+                            "   Convidado em " + dataString + ", às " + data.getHours() + ":" + data.getMinutes());
+
+                    System.out.println("   por " + nomesCriadoresGrupos[i] + "");
+                }
+
+                System.out.println("\nInsira 0 para voltar ao menu anterior");
+
+                System.out.print("\nConvite: ");
+                indiceConvite = Integer.parseInt(br.readLine()) - 1;
+
+                Util.limparTela();
+
+                if (indiceConvite >= 0 && indiceConvite < idsConvitesPendentes.length) {
+                    System.out.println(grupos[indiceConvite].getNome());
+                    Date data = new Date(convites[indiceConvite].getMomentoConvite());
+                    SimpleDateFormat dataFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    String dataString = dataFormat.format(data);
+
+                    System.out.println(
+                            "Convidado em " + dataString + ", às " + data.getHours() + ":" + data.getMinutes());
+
+                    nomesCriadoresGrupos[indiceConvite] = crudUsuario
+                            .obterUsuarioPorId(grupos[indiceConvite].getIdUsuarioCriador()).getNome();
+                    System.out.println("por " + nomesCriadoresGrupos[indiceConvite] + "\n");
+
+                    System.out.print("Você deseja aceitar (A), recusar (R) ou voltar (V)? ");
+                    opcao = br.readLine().charAt(0);
+
+                    if (opcao == 'a' || opcao == 'A') {
+                        try {
+
+                            convites[indiceConvite].setEstado((byte) 1); // aceito
+                            arquivoConvites.atualizar(convites[indiceConvite]);
+                            convitesPendentes.delete(this.usuarioLogado.getEmail(), convites[indiceConvite].getID());
+                            System.out.println("\nConvite aceito com sucesso.");
+                            Util.mensagemContinuar();
+                        } catch (Exception e) {
+                            System.out.println("\nNão foi possível aceitar o convite no momento. Tente novamente.");
+                        }
+                    } else if (opcao == 'r' || opcao == 'R') {
+                        try {
+                            convites[indiceConvite].setEstado((byte) 2); // recuso
+                            arquivoConvites.atualizar(convites[indiceConvite]);
+                            convitesPendentes.delete(this.usuarioLogado.getEmail(), convites[indiceConvite].getID());
+                            System.out.println("\nConvite recuso com sucesso.");
+                            Util.mensagemContinuar();
+                        } catch (Exception e) {
+                            System.out.println("\nNão foi possível recusar o convite no momento. Tente novamente.");
+                        }
+                    } else if (opcao == 'v' || opcao == 'V') {
+                        Util.limparTela();
+                    } else if (opcao != 'v' && opcao != 'V') {
+                        System.out.println("\nOpção inválida. Tente novamente.");
+                        Util.mensagemContinuar();
+                    }
+                }
+            } else {
+                System.out.println("Você não possui convites pendentes.");
+                Util.mensagemContinuar();
+            }
+        } while ((opcao == 'v' || opcao == 'V' || opcao == 'a' || opcao == 'A' || opcao == 'r' || opcao == 'R')
+                && indiceConvite >= 0 && idsConvitesPendentes.length > 0);
+    }
 }

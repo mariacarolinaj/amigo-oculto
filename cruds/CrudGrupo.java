@@ -233,6 +233,10 @@ public class CrudGrupo {
 
     // #region READ
 
+    public Grupo obterGrupoPorId(int grupoId) throws Exception {
+        return (Grupo) arquivoGrupos.buscar(grupoId);
+    }
+
     public void listarGrupos() throws Exception {
         int[] idsGrupos = chavesGruposUsuario.lista(this.idUsuarioLogado);
         int indiceInsercao = 0;
@@ -284,7 +288,7 @@ public class CrudGrupo {
             if (indiceGrupoEscolhido >= 0) {
                 grupoSelecionado = grupos[indiceGrupoEscolhido].clone();
                 Util.limparTela();
-            } else if(indiceGrupoEscolhido != -1) {
+            } else if (indiceGrupoEscolhido != -1) {
                 System.out.println("Índice inválido.");
                 Util.mensagemContinuar();
             }

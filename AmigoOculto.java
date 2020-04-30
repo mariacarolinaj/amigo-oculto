@@ -34,11 +34,12 @@ public class AmigoOculto {
      * utilizados nas operações.
      */
 
-    private static void inicializarServicos(int idUsuarioLogado) {
-        crudSugestao = new CrudSugestao(idUsuarioLogado);
-        crudConvite = new CrudConvite(idUsuarioLogado);
-        crudGrupo = new CrudGrupo(idUsuarioLogado, crudConvite);
-        crudConvite.inicializarBaseDados(idUsuarioLogado, crudGrupo);
+    private static void inicializarServicos(Usuario usuarioLogado) {
+        crudSugestao = new CrudSugestao(usuarioLogado.getID());
+        crudConvite = new CrudConvite(usuarioLogado);
+        crudGrupo = new CrudGrupo(usuarioLogado.getID(), crudConvite);
+        
+        crudConvite.inicializarBaseDados(crudGrupo, crudUsuario);
     }
 
     /*
@@ -70,7 +71,7 @@ public class AmigoOculto {
                     Usuario usuarioLogado = crudUsuario.logar();
                     boolean sucessoAoLogar = usuarioLogado != null;
                     if (sucessoAoLogar) {
-                        inicializarServicos(usuarioLogado.getID());
+                        inicializarServicos(usuarioLogado);
                         exibeMenuUsuarioLogado();
                     }
                     break;
@@ -96,10 +97,11 @@ public class AmigoOculto {
     public static void exibeMenuUsuarioLogado() throws Exception {
         int opcao;
         do {
+            int quantidadeConvitesPendentes = crudConvite.obterQuantidadeConvitesPendentes();
             System.out.println("INÍCIO\n");
             System.out.println("1: Sugestões de presente");
             System.out.println("2: Grupos");
-            System.out.println("3: Novos convites (0)");
+            System.out.println("3: Novos convites (" + quantidadeConvitesPendentes + ")");
             System.out.println("0: Sair");
 
             System.out.print("\nIr para: ");
@@ -116,6 +118,7 @@ public class AmigoOculto {
                     crudGrupo.exibeMenuGerenciamento();
                     break;
                 case 3:
+                    crudConvite.verificarConvitesPendentes();
                     break;
                 case 0:
                     System.out.println("Fazendo logoff...");
