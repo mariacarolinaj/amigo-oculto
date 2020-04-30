@@ -276,13 +276,15 @@ public class CrudGrupo {
             for (int i = 0; i < indiceInsercao; i++) {
                 System.out.println((i + 1) + ". " + grupos[i].getNome());
             }
+            System.out.println("\nInsira 0 para voltar ao menu anterior");
+
             System.out.print("\nGrupo: ");
             int indiceGrupoEscolhido = Integer.parseInt(br.readLine()) - 1;
 
             if (indiceGrupoEscolhido >= 0) {
                 grupoSelecionado = grupos[indiceGrupoEscolhido].clone();
                 Util.limparTela();
-            } else {
+            } else if(indiceGrupoEscolhido != -1) {
                 System.out.println("Índice inválido.");
                 Util.mensagemContinuar();
             }
@@ -309,14 +311,15 @@ public class CrudGrupo {
             for (int i = 0; i < indiceInsercao; i++) {
                 System.out.println((i + 1) + ". " + grupos[i].getNome());
             }
+            System.out.println("\nInsira 0 para voltar ao menu anterior");
             System.out.print("\nGrupo: ");
             int indiceGrupoEscolhido = Integer.parseInt(br.readLine()) - 1;
 
             if (indiceGrupoEscolhido >= 0) {
                 grupoSelecionado = grupos[indiceGrupoEscolhido].clone();
                 Util.limparTela();
-            } else {
-                System.out.println("Índice inválido.");
+            } else if (indiceGrupoEscolhido != -1) {
+                System.out.println("\nÍndice inválido.");
                 Util.mensagemContinuar();
             }
         }

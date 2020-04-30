@@ -254,14 +254,13 @@ public class CrudConvite {
                 System.out.println((i + 1) + ". " + convite.getEmail() + " (" + dataString + " - "
                         + obterDescricaoEstadoConvite(convite.getEstado()) + ")");
             }
-
             System.out.print("\nÍndice do convite que deseja cancelar: ");
             int indiceConviteACancelar = Integer.parseInt(br.readLine()) - 1;
 
             if (indiceConviteACancelar >= 0 && indiceConviteACancelar < convites.length) {
                 Convite conviteACancelar = convites[indiceConviteACancelar];
                 System.out.print(
-                        "\nConfirmar cancelamento do convite enviado para " + conviteACancelar.getEmail() + "? (S/N):");
+                        "\nConfirmar cancelamento do convite enviado para " + conviteACancelar.getEmail() + "? (S/N): ");
                 char confirmacao = br.readLine().charAt(0);
 
                 if (confirmacao == 's' || confirmacao == 'S') {
