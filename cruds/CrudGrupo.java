@@ -173,7 +173,7 @@ public class CrudGrupo {
         if (nome.isEmpty()) {
             System.out.println("\nO nome do grupo é obrigatório. Tente novamente.");
         } else {
-            System.out.print("\nData do sorteio (insira no formato DD-MM-AAAA; não deve ser inferior à data atual): ");
+            System.out.print("\nData do sorteio (insira no formato DD/MM/AAAA; não deve ser inferior à data atual): ");
             String dataSorteio = br.readLine();
             // verifica se a data inserida é valida
             Date objetoDataSorteio = Util.validarEMontarData(dataSorteio);
@@ -185,7 +185,7 @@ public class CrudGrupo {
                 valor = Float.parseFloat(br.readLine());
 
                 System.out.print(
-                        "\nData do encontro (insira no formato DD-MM-AAAA; não deve ser inferior à data do sorteio): ");
+                        "\nData do encontro (insira no formato DD/MM/AAAA; não deve ser inferior à data do sorteio): ");
                 String dataEncontro = br.readLine();
 
                 Date objetoDataEncontro = Util.validarEMontarData(dataEncontro);
