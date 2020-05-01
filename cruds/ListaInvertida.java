@@ -174,7 +174,7 @@ public class ListaInvertida {
         nomeArquivo = na;
 
         // Abre (ou cria) o arquivo, escrevendo uma raiz empty, se necessário.
-        arquivo = new RandomAccessFile(nomeArquivo, "rw");
+        arquivo = new RandomAccessFile("dados/" + nomeArquivo, "rw");
         if (arquivo.length() < 8)
             arquivo.writeLong(-1); // raiz empty
     }
