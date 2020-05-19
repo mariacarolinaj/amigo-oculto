@@ -5,6 +5,7 @@ import java.io.*;
 import entidades.Convite;
 import entidades.Grupo;
 import entidades.Participacao;
+import entidades.Usuario;
 import util.Util;
 
 public class CrudParticipacao {
@@ -13,9 +14,10 @@ public class CrudParticipacao {
     private static BufferedReader br = new BufferedReader(isr);
 
     private static Arquivo<Participacao> arquivoParticipacoes;
+    private static ArvoreB chavesGrupoParticipacao;
+    private static ArvoreB chavesUsuarioParticipacao;
 
     private static CrudGrupo crudGrupo;
-    private static CrudConvite crudConvite;
     private static CrudUsuario crudUsuario;
 
     private int idUsuarioLogado;
@@ -33,14 +35,16 @@ public class CrudParticipacao {
      * eles não existam, são criados dentro da pasta "dados".
      */
 
-    public void inicializarBaseDados(CrudGrupo cg, CrudConvite cc, CrudUsuario cu) {
+    public void inicializarBaseDados(CrudGrupo cg, CrudUsuario cu) {
         try {
+            crudGrupo = cg;
+            crudUsuario = cu;
             // tenta abrir os arquivos da base de dados caso existam;
             // se não existirem, são criados
             arquivoParticipacoes = new Arquivo<>(Participacao.class.getConstructor(), "participacoes.db");
-            crudGrupo = cg;
-            crudConvite = cc;
-            crudUsuario = cu;
+            chavesGrupoParticipacao = new ArvoreB(100, "chavesGrupoParticipacao.idx");
+            chavesUsuarioParticipacao = new ArvoreB(100, "chavesUsuarioParticipacao.idx");
+
         } catch (Exception e) {
             System.err.println("Não foi possível inicializar a base de dados dos participantes.");
             e.printStackTrace();
@@ -78,11 +82,15 @@ public class CrudParticipacao {
 
     // #region CREATE
 
-    public void inserirParticipacao(Convite convite) throws Exception {
-        int idUsuarioConvite = crudUsuario.obterDadosUsuarioPorEmail(convite.getEmail()).getID();
-        Participacao participacao = new Participacao(idUsuarioConvite, convite.getIdGrupo(), -1);
-        // o idAmigo é definido como -1 representando que o sorteio ainda não foi realizado
-        arquivoParticipacoes.incluir(participacao);
+    public void inserirParticipacao(Convite convite, int idParticipante) throws Exception {
+        // idAmigo definido como -1 representando que o sorteio ainda não foi realizado
+        Participacao participacao = new Participacao(idParticipante, convite.getIdGrupo(), -1);
+
+        int idParticipacao = arquivoParticipacoes.incluir(participacao);
+
+        // insere chaves secudarias nas arvores
+        chavesGrupoParticipacao.inserir(convite.getIdGrupo(), idParticipacao);
+        chavesUsuarioParticipacao.inserir(idParticipante, idParticipacao);
     }
 
     // #endregion
@@ -97,8 +105,29 @@ public class CrudParticipacao {
         Util.limparTela();
 
         if (grupo != null) {
-            crudConvite.exibirConvitesGrupo(grupo, true);
+            String statusSorteio = "";
+            if (grupo.isSorteado()) {
+                statusSorteio = "REALIZADO";
+            } else {
+                statusSorteio = "PENDENTE";
+            }
+            System.out.println("Status do sorteio: " + statusSorteio + "\n");
+            System.out.println("PARTICIPANTES DO GRUPO \"" + grupo.getNome() + "\"\n");
+
+            int[] idsParticipacoes = chavesGrupoParticipacao.lista(grupo.getID());
+            Usuario[] usuariosParticipacoes = new Usuario[idsParticipacoes.length];
+
+            if (idsParticipacoes.length == 0) {
+                System.out.println("Ainda não existem participações ativas neste grupo.");
+            }
+            for (int i = 0; i < idsParticipacoes.length; i++) {
+                int idUsuario = ((Participacao) arquivoParticipacoes.buscar(idsParticipacoes[i])).getIdUsuario();
+                usuariosParticipacoes[i] = crudUsuario.obterUsuarioPorId(idUsuario);
+
+                System.out.println((i + 1) + ". " + usuariosParticipacoes[i].getNome());
+            }
         }
+        Util.mensagemContinuar();
     }
 
     // #endregion

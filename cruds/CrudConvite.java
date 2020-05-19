@@ -313,6 +313,7 @@ public class CrudConvite {
         int[] idsConvitesPendentes;
         char opcao = 'v';
         int indiceConvite = -1;
+        
         do {
             idsConvitesPendentes = convitesPendentes.read(this.usuarioLogado.getEmail());
             Convite[] convites = new Convite[idsConvitesPendentes.length];
@@ -370,12 +371,13 @@ public class CrudConvite {
 
                             convites[indiceConvite].setEstado((byte) 1); // aceito
                             arquivoConvites.atualizar(convites[indiceConvite]);
-                            crudParticipacao.inserirParticipacao(convites[indiceConvite]);
+                            crudParticipacao.inserirParticipacao(convites[indiceConvite], this.usuarioLogado.getID());
                             convitesPendentes.delete(this.usuarioLogado.getEmail(), convites[indiceConvite].getID());
                             System.out.println("\nConvite aceito com sucesso.");
                             Util.mensagemContinuar();
                         } catch (Exception e) {
                             System.out.println("\nNão foi possível aceitar o convite no momento. Tente novamente.");
+                            Util.mensagemContinuar();
                         }
                     } else if (opcao == 'r' || opcao == 'R') {
                         try {
@@ -386,6 +388,7 @@ public class CrudConvite {
                             Util.mensagemContinuar();
                         } catch (Exception e) {
                             System.out.println("\nNão foi possível recusar o convite no momento. Tente novamente.");
+                            Util.mensagemContinuar();
                         }
                     } else if (opcao == 'v' || opcao == 'V') {
                         Util.limparTela();
