@@ -165,34 +165,32 @@ public class CrudParticipacao {
     public void removerParticipacao() throws Exception {
         System.out.println("Selecione qual grupo deseja listar os participantes:\n");
         Grupo grupo = crudGrupo.listarESelecionarGrupoAtivo();
-
         Usuario participanteASerRemovido = this.listarParticipantes(grupo, true);
+        int[] participacoesGrupoIds = chavesGrupoParticipacao.lista(grupo.getID());
+        Participacao participacaoASerModificada = null, participacaoASerExcluida = null;
+        // participacaoASerModificada é o objeto que trocará o amigo com o excluído
+
+        for (int i = 0; i < participacoesGrupoIds.length; i++) {
+            Participacao participacao = (Participacao) arquivoParticipacoes.buscar(participacoesGrupoIds[i]);
+            if (grupo.isSorteado() && participacao.getIdAmigo() == participanteASerRemovido.getID()) {
+                participacaoASerModificada = participacao.clone();
+            }
+            if (participacao.getIdUsuario() == participanteASerRemovido.getID()) {
+                participacaoASerExcluida = participacao.clone();
+            }
+        }
 
         if (grupo.isSorteado()) {
-            int[] participacoesGrupoIds = chavesGrupoParticipacao.lista(grupo.getID());
-            Participacao participacaoASerModificada = null, participacaoASerExcluida = null;
-            // participacaoASerModificada é o objeto que trocará o amigo com o excluído
-
-            for (int i = 0; i < participacoesGrupoIds.length; i++) {
-                Participacao participacao = (Participacao) arquivoParticipacoes.buscar(participacoesGrupoIds[i]);
-                if (participacao.getIdAmigo() == participanteASerRemovido.getID()) {
-                    participacaoASerModificada = participacao.clone();
-                }
-                if (participacao.getIdUsuario() == participanteASerRemovido.getID()) {
-                    participacaoASerExcluida = participacao.clone();
-                }
-            }
-
             if (participacaoASerModificada != null && participacaoASerExcluida != null) {
                 participacaoASerModificada.setIdAmigo(participacaoASerExcluida.getIdAmigo());
             }
 
             this.atualizarParticipacao(participacaoASerModificada);
-            this.removerParticipacao(participacaoASerExcluida);
-
-            Util.mensagemContinuar();
         }
 
+        this.removerParticipacao(participacaoASerExcluida);
+
+        Util.mensagemContinuar();
     }
 
     public void removerParticipacao(Participacao participacao) {
