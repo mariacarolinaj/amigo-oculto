@@ -22,6 +22,7 @@ public class CrudParticipacao {
     private static CrudGrupo crudGrupo;
     private static CrudUsuario crudUsuario;
     private static CrudSugestao crudSugestao;
+    private static CrudMensagem crudMensagem;
 
     private int idUsuarioLogado;
 
@@ -38,11 +39,12 @@ public class CrudParticipacao {
      * eles não existam, são criados dentro da pasta "dados".
      */
 
-    public void inicializarBaseDados(CrudGrupo cg, CrudUsuario cu, CrudSugestao cs) {
+    public void inicializarBaseDados(CrudGrupo cg, CrudUsuario cu, CrudSugestao cs, CrudMensagem cm) {
         try {
             crudGrupo = cg;
             crudUsuario = cu;
             crudSugestao = cs;
+            crudMensagem = cm;
             // tenta abrir os arquivos da base de dados caso existam;
             // se não existirem, são criados
             arquivoParticipacoes = new Arquivo<>(Participacao.class.getConstructor(), "participacoes.db");
@@ -274,9 +276,11 @@ public class CrudParticipacao {
                             this.listarDadosParticipanteSorteado(grupoSelecionado);
                         } else {
                             System.out.println("O sorteio ainda não foi realizado.");
+                            Util.mensagemContinuar();
                         }
                         break;
                     case 3:
+                        crudMensagem.exibirMenuMensagem(grupoSelecionado);
                         break;
                     case 0: // não é preciso fazer nada
                         break;

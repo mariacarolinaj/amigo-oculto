@@ -9,6 +9,9 @@ public class Mensagem implements Registro {
     private String mensagem;
     private long momentoEnvio;
 
+    public Mensagem() {
+    }
+
     public Mensagem(int idMensagem, int idUsuario, int idGrupo, String mensagem, long momentoEnvio) {
         this.idMensagem = idMensagem;
         this.idUsuario = idUsuario;
