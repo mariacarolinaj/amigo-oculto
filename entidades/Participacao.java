@@ -21,6 +21,13 @@ public class Participacao implements Registro {
         this.setIdAmigo(idAmigo);
     }
 
+    public Participacao(int id, int idUsuario, int idGrupo, int idAmigo) {
+        this.setID(id);
+        this.setIdUsuario(idUsuario);
+        this.setIdGrupo(idGrupo);
+        this.setIdAmigo(idAmigo);
+    }
+
     @Override
     public int getID() {
         return idParticipacao;
@@ -81,4 +88,7 @@ public class Participacao implements Registro {
         this.idAmigo = entrada.readInt();
     }
 
+    public Participacao clone() {
+        return new Participacao(getID(), getIdUsuario(), getIdGrupo(), getIdAmigo());
+    }
 }

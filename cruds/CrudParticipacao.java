@@ -99,8 +99,12 @@ public class CrudParticipacao {
 
     public void listarParticipantes() throws Exception {
         System.out.println("Selecione qual grupo deseja listar os participantes:\n");
-
         Grupo grupo = crudGrupo.listarESelecionarGrupoAtivo();
+        this.listarParticipantes(grupo, false);
+    }
+
+    public Usuario listarParticipantes(Grupo grupo, boolean selecionarParticipante) throws Exception {
+        Usuario usuarioSelecionado = null;
 
         Util.limparTela();
 
@@ -126,9 +130,80 @@ public class CrudParticipacao {
 
                 System.out.println((i + 1) + ". " + usuariosParticipacoes[i].getNome());
             }
+
+            if (selecionarParticipante) {
+                System.out.println("\nInsira 0 para voltar ao menu anterior");
+                System.out.print("\nParticipante: ");
+
+                int numero = Integer.parseInt(br.readLine());
+                usuarioSelecionado = usuariosParticipacoes[numero];
+            }
         }
-        Util.mensagemContinuar();
+        if (!selecionarParticipante) {
+            Util.mensagemContinuar();
+        }
+
+        return usuarioSelecionado;
     }
 
+    // #endregion
+
+    // #region UPDATE
+
+    public void atualizarParticipacao(Participacao participacao) {
+        try {
+            arquivoParticipacoes.atualizar(participacao);
+        } catch (Exception e) {
+            Util.mensagemErroAtualizacao();
+        }
+    }
+
+    // #endregion
+
+    // #region DELETE
+
+    public void removerParticipacao() throws Exception {
+        System.out.println("Selecione qual grupo deseja listar os participantes:\n");
+        Grupo grupo = crudGrupo.listarESelecionarGrupoAtivo();
+
+        Usuario participanteASerRemovido = this.listarParticipantes(grupo, true);
+
+        if (grupo.isSorteado()) {
+            int[] participacoesGrupoIds = chavesGrupoParticipacao.lista(grupo.getID());
+            Participacao participacaoASerModificada = null, participacaoASerExcluida = null;
+            // participacaoASerModificada é o objeto que trocará o amigo com o excluído
+
+            for (int i = 0; i < participacoesGrupoIds.length; i++) {
+                Participacao participacao = (Participacao) arquivoParticipacoes.buscar(participacoesGrupoIds[i]);
+                if (participacao.getIdAmigo() == participanteASerRemovido.getID()) {
+                    participacaoASerModificada = participacao.clone();
+                }
+                if (participacao.getIdUsuario() == participanteASerRemovido.getID()) {
+                    participacaoASerExcluida = participacao.clone();
+                }
+            }
+
+            if (participacaoASerModificada != null && participacaoASerExcluida != null) {
+                participacaoASerModificada.setIdAmigo(participacaoASerExcluida.getIdAmigo());
+            }
+
+            this.atualizarParticipacao(participacaoASerModificada);
+            this.removerParticipacao(participacaoASerExcluida);
+
+            Util.mensagemContinuar();
+        }
+
+    }
+
+    public void removerParticipacao(Participacao participacao) {
+        try {
+            arquivoParticipacoes.excluir(participacao.getID());
+            chavesGrupoParticipacao.excluir(participacao.getIdGrupo(), participacao.getID());
+            chavesUsuarioParticipacao.excluir(participacao.getIdUsuario(), participacao.getID());
+            Util.mensagemSucessoExclusao();
+        } catch (Exception e) {
+            Util.mensagemErroExclusao();
+        }
+    }
     // #endregion
 }
