@@ -41,7 +41,7 @@ public class AmigoOculto {
         crudParticipacao = new CrudParticipacao(usuarioLogado.getID());
         crudGrupo = new CrudGrupo(usuarioLogado.getID(), crudConvite, crudParticipacao);
         
-        crudParticipacao.inicializarBaseDados(crudGrupo, crudUsuario);
+        crudParticipacao.inicializarBaseDados(crudGrupo, crudUsuario, crudSugestao);
         crudConvite.inicializarBaseDados(crudGrupo, crudUsuario, crudParticipacao);
     }
 
