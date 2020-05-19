@@ -278,6 +278,7 @@ public class CrudConvite {
                 System.out.println((i + 1) + ". " + convite.getEmail() + " (" + dataString + " - "
                         + obterDescricaoEstadoConvite(convite.getEstado()) + ")");
             }
+            System.out.println("\n0: Voltar para o menu anterior");
             System.out.print("\nÍndice do convite que deseja cancelar: ");
             int indiceConviteACancelar = Integer.parseInt(br.readLine()) - 1;
 
