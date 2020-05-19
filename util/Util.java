@@ -67,7 +67,7 @@ public class Util {
         Date objetoData = null;
         try {
 
-            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             objetoData = (Date) formatter.parse(data);
         } catch (Exception e) {
             System.out.println("A data inserida é inválida. Tente novamente.");

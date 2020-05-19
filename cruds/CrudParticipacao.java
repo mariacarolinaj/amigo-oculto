@@ -4,7 +4,6 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import entidades.Convite;
 import entidades.Grupo;
 import entidades.Participacao;
 import entidades.Usuario;
@@ -89,14 +88,14 @@ public class CrudParticipacao {
 
     // #region CREATE
 
-    public void inserirParticipacao(Convite convite, int idParticipante) throws Exception {
+    public void inserirParticipacao(int idGrupo, int idParticipante) throws Exception {
         // idAmigo definido como -1 representando que o sorteio ainda não foi realizado
-        Participacao participacao = new Participacao(idParticipante, convite.getIdGrupo(), -1);
+        Participacao participacao = new Participacao(idParticipante, idGrupo, -1);
 
         int idParticipacao = arquivoParticipacoes.incluir(participacao);
 
         // insere chaves secudarias nas arvores
-        chavesGrupoParticipacao.inserir(convite.getIdGrupo(), idParticipacao);
+        chavesGrupoParticipacao.inserir(idGrupo, idParticipacao);
         chavesUsuarioParticipacao.inserir(idParticipante, idParticipacao);
     }
 
@@ -106,7 +105,7 @@ public class CrudParticipacao {
 
     public void listarParticipantes() throws Exception {
         System.out.println("Selecione qual grupo deseja listar os participantes:\n");
-        Grupo grupo = crudGrupo.listarESelecionarGrupoAtivo();
+        Grupo grupo = crudGrupo.listarESelecionarGrupoAtivoCriadoPeloUsuario();
         if (grupo != null) {
             this.listarParticipantes(grupo, false);
         }
@@ -132,26 +131,29 @@ public class CrudParticipacao {
 
             if (idsParticipacoes.length == 0) {
                 System.out.println("Ainda não existem participações ativas neste grupo.");
-            }
-            for (int i = 0; i < idsParticipacoes.length; i++) {
-                int idUsuario = ((Participacao) arquivoParticipacoes.buscar(idsParticipacoes[i])).getIdUsuario();
-                usuariosParticipacoes[i] = crudUsuario.obterUsuarioPorId(idUsuario);
+                Util.mensagemContinuar();
+            } else {
 
-                System.out.println((i + 1) + ". " + usuariosParticipacoes[i].getNome());
-            }
+                for (int i = 0; i < idsParticipacoes.length; i++) {
+                    int idUsuario = ((Participacao) arquivoParticipacoes.buscar(idsParticipacoes[i])).getIdUsuario();
+                    usuariosParticipacoes[i] = crudUsuario.obterUsuarioPorId(idUsuario);
 
-            if (selecionarParticipante) {
-                System.out.println("\nInsira 0 para voltar ao menu anterior");
-                System.out.print("\nNúmero do participante a ser removido: ");
-
-                int numero = Integer.parseInt(br.readLine()) - 1;
-                if (numero >= 0) {
-                    usuarioSelecionado = usuariosParticipacoes[numero];
+                    System.out.println((i + 1) + ". " + usuariosParticipacoes[i].getNome());
                 }
+
+                if (selecionarParticipante) {
+                    System.out.println("\nInsira 0 para voltar ao menu anterior");
+                    System.out.print("\nNúmero do participante a ser removido: ");
+
+                    int numero = Integer.parseInt(br.readLine()) - 1;
+                    if (numero >= 0) {
+                        usuarioSelecionado = usuariosParticipacoes[numero];
+                    }
+                } else {
+                    Util.mensagemContinuar();
+                }
+
             }
-        }
-        if (!selecionarParticipante) {
-            Util.mensagemContinuar();
         }
 
         return usuarioSelecionado;
@@ -185,6 +187,18 @@ public class CrudParticipacao {
         Util.mensagemContinuar();
     }
 
+    public int[] obterIdsGruposEmQueOUsuarioParticipa(int id) throws Exception {
+        int[] idsParticipacoesUsuario = chavesUsuarioParticipacao.lista(id);
+        int[] idsGruposUsuarioParticipa = new int[idsParticipacoesUsuario.length];
+
+        for (int i = 0; i < idsParticipacoesUsuario.length; i++) {
+            idsGruposUsuarioParticipa[i] = ((Participacao) arquivoParticipacoes.buscar(idsParticipacoesUsuario[i]))
+                    .getIdGrupo();
+        }
+
+        return idsGruposUsuarioParticipa;
+    }
+
     // #endregion
 
     // #region UPDATE
@@ -203,7 +217,7 @@ public class CrudParticipacao {
 
     public void removerParticipacao() throws Exception {
         System.out.println("Selecione qual grupo deseja remover participantes:\n");
-        Grupo grupo = crudGrupo.listarESelecionarGrupoAtivo();
+        Grupo grupo = crudGrupo.listarESelecionarGrupoAtivoCriadoPeloUsuario();
 
         if (grupo != null) {
             Usuario participanteASerRemovido = this.listarParticipantes(grupo, true);
@@ -251,8 +265,7 @@ public class CrudParticipacao {
     // #endregion
 
     public void exibirMenuParticipacoes() throws Exception {
-        System.out.println("ESCOLHA UM DOS GRUPOS QUE VOCÊ PARTICIPA:\n");
-        Grupo grupoSelecionado = crudGrupo.listarESelecionarGrupoAtivo();
+        Grupo grupoSelecionado = crudGrupo.listarESelecionarGrupoAtivoQueOUsuarioParticipa();
 
         Util.limparTela();
 

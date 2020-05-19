@@ -151,7 +151,7 @@ public class CrudUsuario {
   }
 
   public ChaveSecundariaUsuario obterDadosUsuarioPorEmail(String email) throws Exception {
-    return (ChaveSecundariaUsuario) arquivoUsuarios.buscarChaveSecundariaUsuario(email);
+    return (ChaveSecundariaUsuario) arquivoChaveSecundariaUsuario.buscarChaveSecundariaUsuario(email);
   }
 
   // #endregion

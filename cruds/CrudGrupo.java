@@ -17,7 +17,7 @@ public class CrudGrupo {
 
     private static CrudConvite crudConvite;
     private static CrudParticipacao crudParticipacao;
-    
+
     private int idUsuarioLogado;
 
     public CrudGrupo(int idUsuarioLogado, CrudConvite cc, CrudParticipacao cp) {
@@ -178,7 +178,8 @@ public class CrudGrupo {
         if (nome.isEmpty()) {
             System.out.println("\nO nome do grupo é obrigatório. Tente novamente.");
         } else {
-            System.out.print("\nData do sorteio (insira no formato DD/MM/AAAA; não deve ser inferior à data atual): ");
+            System.out.print(
+                    "\nData e hora do sorteio (insira no formato DD/MM/AAAA HH:MM; não deve ser inferior à data atual): ");
             String dataSorteio = br.readLine();
             // verifica se a data inserida é valida
             Date objetoDataSorteio = Util.validarEMontarData(dataSorteio);
@@ -190,7 +191,7 @@ public class CrudGrupo {
                 valor = Float.parseFloat(br.readLine());
 
                 System.out.print(
-                        "\nData do encontro (insira no formato DD/MM/AAAA; não deve ser inferior à data do sorteio): ");
+                        "\nData e hora do encontro (insira no formato DD/MM/AAAA HH:MM; não deve ser inferior à data do sorteio): ");
                 String dataEncontro = br.readLine();
 
                 Date objetoDataEncontro = Util.validarEMontarData(dataEncontro);
@@ -216,6 +217,7 @@ public class CrudGrupo {
                             int idGrupoInserido = arquivoGrupos.incluir(grupo);
                             // cria chave na arvore b+ do novo grupo ao usuário logado
                             chavesGruposUsuario.inserir(this.idUsuarioLogado, idGrupoInserido);
+                            crudParticipacao.inserirParticipacao(grupo.getID(), this.idUsuarioLogado);
                             Util.mensagemSucessoCadastro();
                         } catch (Exception e) {
                             Util.mensagemErroCadastro();
@@ -256,7 +258,7 @@ public class CrudGrupo {
         }
 
         if (indiceInsercao == 0) {
-            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+            System.out.println("Você não possui nenhum grupo ativo no momento.");
         }
 
         for (int i = 0; i < indiceInsercao; i++) {
@@ -266,7 +268,7 @@ public class CrudGrupo {
         Util.mensagemContinuar();
     }
 
-    public Grupo listarESelecionarGrupoAtivo() throws Exception {
+    public Grupo listarESelecionarGrupoAtivoCriadoPeloUsuario() throws Exception {
         int[] idsGrupos = chavesGruposUsuario.lista(this.idUsuarioLogado);
         int indiceInsercao = 0;
         Grupo[] grupos = new Grupo[idsGrupos.length];
@@ -281,7 +283,48 @@ public class CrudGrupo {
 
         if (indiceInsercao == 0) {
             System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+            Util.mensagemContinuar();
         } else {
+            System.out.println("ESCOLHA O GRUPO:\n");
+
+            for (int i = 0; i < indiceInsercao; i++) {
+                System.out.println((i + 1) + ". " + grupos[i].getNome());
+            }
+            System.out.println("\nInsira 0 para voltar ao menu anterior");
+
+            System.out.print("\nGrupo: ");
+            int indiceGrupoEscolhido = Integer.parseInt(br.readLine()) - 1;
+
+            if (indiceGrupoEscolhido >= 0) {
+                grupoSelecionado = grupos[indiceGrupoEscolhido].clone();
+                Util.limparTela();
+            } else if (indiceGrupoEscolhido != -1) {
+                System.out.println("Índice inválido.");
+                Util.mensagemContinuar();
+            }
+        }
+        return grupoSelecionado;
+    }
+
+    public Grupo listarESelecionarGrupoAtivoQueOUsuarioParticipa() throws Exception {
+        int[] idsGrupos = crudParticipacao.obterIdsGruposEmQueOUsuarioParticipa(this.idUsuarioLogado);
+        int indiceInsercao = 0;
+        Grupo[] grupos = new Grupo[idsGrupos.length];
+        Grupo grupoSelecionado = null;
+
+        for (int i = 0; i < idsGrupos.length; i++) {
+            Grupo grupo = (Grupo) arquivoGrupos.buscar(idsGrupos[i]);
+            if (grupo.isAtivo()) {
+                grupos[indiceInsercao++] = grupo;
+            }
+        }
+
+        if (indiceInsercao == 0) {
+            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+            Util.mensagemContinuar();
+        } else {
+            System.out.println("ESCOLHA O GRUPO:\n");
+
             for (int i = 0; i < indiceInsercao; i++) {
                 System.out.println((i + 1) + ". " + grupos[i].getNome());
             }
@@ -316,7 +359,11 @@ public class CrudGrupo {
 
         if (indiceInsercao == 0) {
             System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+            Util.mensagemContinuar();
         } else {
+            System.out.println("EMISSÃO DE CONVITES");
+            System.out.println("Informe o grupo que deseja emitir convites:\n");
+
             for (int i = 0; i < indiceInsercao; i++) {
                 System.out.println((i + 1) + ". " + grupos[i].getNome());
             }
@@ -361,7 +408,7 @@ public class CrudGrupo {
         }
 
         if (indiceInsercao == 0) {
-            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+            System.out.println("Você não possui nenhum grupo ativo no momento.");
         } else {
             for (int i = 0; i < indiceInsercao; i++) {
                 System.out.println((i + 1) + ". " + grupos[i].getNome());
@@ -390,9 +437,9 @@ public class CrudGrupo {
         int opcao;
         System.out.println("Informe qual atributo deseja alterar:\n");
         System.out.println("1: Nome");
-        System.out.println("2: Data do sorteio");
+        System.out.println("2: Data e hora do sorteio");
         System.out.println("3: Valor médio dos presentes");
-        System.out.println("4: Data do encontro");
+        System.out.println("4: Data e hora do encontro");
         System.out.println("5: Local do encontro");
         System.out.println("6: Observações");
         System.out.println("0: Salvar alterações e voltar para o menu anterior");
@@ -418,7 +465,7 @@ public class CrudGrupo {
                     break;
                 case 2:
                     System.out.print(
-                            "\nNova data do sorteio (insira no formato DD-MM-AAAA; não deve ser inferior à data atual): ");
+                            "\nNova data e hora do sorteio (insira no formato DD/MM/AAAA HH:MM; não deve ser inferior à data atual): ");
                     String dataSorteio = br.readLine();
                     // verifica se a data inserida é valida
                     Date objetoDataSorteio = Util.validarEMontarData(dataSorteio);
@@ -439,7 +486,7 @@ public class CrudGrupo {
                     break;
                 case 4:
                     System.out.print(
-                            "\nNova data do encontro (insira no formato DD-MM-AAAA; não deve ser inferior à data atual): ");
+                            "\nNova data e hora do encontro (insira no formato DD-MM-AAAA HH:MM; não deve ser inferior à data atual): ");
                     String dataEncontro = br.readLine();
                     // verifica se a data inserida é valida
                     Date objetoDataEncontro = Util.validarEMontarData(dataEncontro);
@@ -504,7 +551,7 @@ public class CrudGrupo {
         }
 
         if (indiceInsercao == 0) {
-            System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+            System.out.println("Você não possui nenhum grupo ativo no momento.");
         } else {
             for (int i = 0; i < indiceInsercao; i++) {
                 System.out.println((i + 1) + ". " + grupos[i].getNome());
