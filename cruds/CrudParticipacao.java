@@ -21,6 +21,7 @@ public class CrudParticipacao {
 
     private static CrudGrupo crudGrupo;
     private static CrudUsuario crudUsuario;
+    private static CrudSugestao crudSugestao;
 
     private int idUsuarioLogado;
 
@@ -37,10 +38,11 @@ public class CrudParticipacao {
      * eles não existam, são criados dentro da pasta "dados".
      */
 
-    public void inicializarBaseDados(CrudGrupo cg, CrudUsuario cu) {
+    public void inicializarBaseDados(CrudGrupo cg, CrudUsuario cu, CrudSugestao cs) {
         try {
             crudGrupo = cg;
             crudUsuario = cu;
+            crudSugestao = cs;
             // tenta abrir os arquivos da base de dados caso existam;
             // se não existirem, são criados
             arquivoParticipacoes = new Arquivo<>(Participacao.class.getConstructor(), "participacoes.db");
@@ -153,6 +155,34 @@ public class CrudParticipacao {
         return usuarioSelecionado;
     }
 
+    public void listarDadosParticipanteSorteado(Grupo grupo) throws Exception {
+        int[] idsParticipacaoGrupo = chavesGrupoParticipacao.lista(grupo.getID());
+        int[] idsParticipacaoUsuario = chavesUsuarioParticipacao.lista(this.idUsuarioLogado);
+
+        int idParticipacaoUsuarioGrupo = -1;
+
+        for (int i : idsParticipacaoGrupo) {
+            for (int j : idsParticipacaoUsuario) {
+                if (i == j) {
+                    idParticipacaoUsuarioGrupo = i; // encontra o ID da participacao do usuário no grupo
+                }
+            }
+        }
+
+        if (idParticipacaoUsuarioGrupo != -1) {
+            Participacao dadosParticipacao = (Participacao) arquivoParticipacoes.buscar(idParticipacaoUsuarioGrupo);
+            Usuario usuarioSorteado = crudUsuario.obterUsuarioPorId(dadosParticipacao.getIdAmigo());
+
+            System.out.println("Amigo(a) sorteado(a): " + usuarioSorteado.getNome() + "\n");
+            System.out.println("Sugestões de presente cadastradas por ele(a):\n");
+            crudSugestao.listarSugestoes(dadosParticipacao.getIdAmigo());
+        } else {
+            Util.mensagemTenteNovamente();
+        }
+
+        Util.mensagemContinuar();
+    }
+
     // #endregion
 
     // #region UPDATE
@@ -240,6 +270,11 @@ public class CrudParticipacao {
                         this.listarParticipantes(grupoSelecionado, false);
                         break;
                     case 2:
+                        if (grupoSelecionado.isSorteado()) {
+                            this.listarDadosParticipanteSorteado(grupoSelecionado);
+                        } else {
+                            System.out.println("O sorteio ainda não foi realizado.");
+                        }
                         break;
                     case 3:
                         break;

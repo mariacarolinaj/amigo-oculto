@@ -143,8 +143,12 @@ public class CrudSugestao {
      */
 
     public void listar() throws Exception {
-        int[] idsSugestoes = chavesSugestaoUsuario.lista(this.idUsuarioLogado);
         System.out.println("MINHAS SUGESTÕES\n");
+        this.listarSugestoes(this.idUsuarioLogado);
+    }
+
+    public void listarSugestoes(int idUsuario) throws Exception {
+        int[] idsSugestoes = chavesSugestaoUsuario.lista(idUsuario);
 
         if (idsSugestoes.length == 0) {
             System.out.println("Ainda não foi cadastrada nenhuma sugestão.");
