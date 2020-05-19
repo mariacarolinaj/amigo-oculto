@@ -2,7 +2,11 @@ package cruds;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import entidades.Grupo;
 import entidades.Participacao;
@@ -345,5 +349,58 @@ public class CrudParticipacao {
 
         System.out.println("\nObservações: ");
         System.out.println(grupoSelecionado.getObservacoes());
+    }
+
+    public void realizarSorteio() throws Exception {
+        Grupo grupoSelecionado = crudGrupo.listarESelecionarGrupoAtivoSemSorteioCriadoPeloUsuario();
+
+        if (grupoSelecionado != null) {
+
+            int[] idsParticipacoesGrupo = chavesGrupoParticipacao.lista(grupoSelecionado.getID());
+            List<Participacao> participantes = new ArrayList<Participacao>();
+
+            for (int i = 0; i < idsParticipacoesGrupo.length; i++) {
+                participantes.add((Participacao) arquivoParticipacoes.buscar(idsParticipacoesGrupo[i]));
+            }
+
+            try {
+                participantes = this.embaralhar(participantes); // embaralha participantes
+
+                participantes.get(participantes.size() - 1).setIdAmigo(participantes.get(0).getIdUsuario());
+
+                for (int i = 0; i < participantes.size() - 1; i++) {
+                    int idAmigoSorteado = participantes.get(i + 1).getIdUsuario();
+                    participantes.get(i).setIdAmigo(idAmigoSorteado);
+                    arquivoParticipacoes.atualizar(participantes.get(i));
+                }
+
+                grupoSelecionado.setSorteado(true);
+                crudGrupo.atualizar(grupoSelecionado, false);
+
+                System.out.println("Sorteio realizado com sucesso.");
+            } catch (Exception e) {
+                System.out.println("Ocorreu um erro ao realizar o sorteio. Tente novamente.");
+            }
+
+            Util.mensagemContinuar();
+        } else {
+            Util.limparTela();
+        }
+    }
+
+    private List<Participacao> embaralhar(List<Participacao> lista) {
+        Random random = new Random();
+
+        for (int i = 0; i < (lista.size() - 1); i++) {
+
+            // sorteia um índice
+            int j = random.nextInt(lista.size());
+
+            // troca o conteúdo dos índices i e j do vetor
+            Participacao temp = lista.get(i);
+            lista.set(i, lista.get(j));
+            lista.set(j, temp);
+        }
+        return lista;
     }
 }

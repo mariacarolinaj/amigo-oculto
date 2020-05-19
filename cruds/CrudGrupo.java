@@ -111,6 +111,7 @@ public class CrudGrupo {
                     crudParticipacao.exibeMenuParticipantes();
                     break;
                 case 4:
+                    crudParticipacao.realizarSorteio();
                     break;
                 case 0: // não é necessário fazer nada
                     break;
@@ -283,6 +284,44 @@ public class CrudGrupo {
 
         if (indiceInsercao == 0) {
             System.out.println("Você não faz parte de nenhum grupo ativo no momento.");
+            Util.mensagemContinuar();
+        } else {
+            System.out.println("ESCOLHA O GRUPO:\n");
+
+            for (int i = 0; i < indiceInsercao; i++) {
+                System.out.println((i + 1) + ". " + grupos[i].getNome());
+            }
+            System.out.println("\nInsira 0 para voltar ao menu anterior");
+
+            System.out.print("\nGrupo: ");
+            int indiceGrupoEscolhido = Integer.parseInt(br.readLine()) - 1;
+
+            if (indiceGrupoEscolhido >= 0) {
+                grupoSelecionado = grupos[indiceGrupoEscolhido].clone();
+                Util.limparTela();
+            } else if (indiceGrupoEscolhido != -1) {
+                System.out.println("Índice inválido.");
+                Util.mensagemContinuar();
+            }
+        }
+        return grupoSelecionado;
+    }
+
+    public Grupo listarESelecionarGrupoAtivoSemSorteioCriadoPeloUsuario() throws Exception {
+        int[] idsGrupos = chavesGruposUsuario.lista(this.idUsuarioLogado);
+        int indiceInsercao = 0;
+        Grupo[] grupos = new Grupo[idsGrupos.length];
+        Grupo grupoSelecionado = null;
+
+        for (int i = 0; i < idsGrupos.length; i++) {
+            Grupo grupo = (Grupo) arquivoGrupos.buscar(idsGrupos[i]);
+            if (grupo.isAtivo() && !grupo.isSorteado() && grupo.getMomentoSorteio() < new Date().getTime()) {
+                grupos[indiceInsercao++] = grupo;
+            }
+        }
+
+        if (indiceInsercao == 0) {
+            System.out.println("Você não possui nenhum grupo passível de realização de sorteio no momento.");
             Util.mensagemContinuar();
         } else {
             System.out.println("ESCOLHA O GRUPO:\n");
@@ -514,12 +553,7 @@ public class CrudGrupo {
                 case 0:
                     // verifica se houve alguma mudança; se sim, atualiza a sugestão
                     if (!grupoAtualizado.equals(grupos[indiceGrupoAAtualizar])) {
-                        boolean atualizado = (boolean) arquivoGrupos.atualizar(grupoAtualizado);
-                        if (atualizado) {
-                            Util.mensagemSucessoAtualizacao();
-                        } else {
-                            Util.mensagemErroAtualizacao();
-                        }
+                        atualizar(grupoAtualizado, true);
                     }
                     // volta pro menu anterior
                     break;
@@ -528,6 +562,17 @@ public class CrudGrupo {
                     Util.mensagemContinuar();
             }
         } while (opcao != 0);
+    }
+
+    public void atualizar(Grupo grupoAtualizado, boolean exibirMensagem) throws Exception {
+        boolean atualizado = (boolean) arquivoGrupos.atualizar(grupoAtualizado);
+        if (exibirMensagem) {
+            if (atualizado) {
+                Util.mensagemSucessoAtualizacao();
+            } else {
+                Util.mensagemErroAtualizacao();
+            }
+        }
     }
 
     // #endregion
