@@ -300,7 +300,7 @@ public class CrudConvite {
                                 "\nNão foi possível cancelar o convite selecionado no momento. Tente novamente.");
                     }
                 }
-            } else {
+            } else if (indiceConviteACancelar != -1) {
                 System.out.println("\nÍndice inválido. Tente novamente.");
             }
         }
@@ -314,7 +314,7 @@ public class CrudConvite {
         int[] idsConvitesPendentes;
         char opcao = 'v';
         int indiceConvite = -1;
-        
+
         do {
             idsConvitesPendentes = convitesPendentes.read(this.usuarioLogado.getEmail());
             Convite[] convites = new Convite[idsConvitesPendentes.length];
