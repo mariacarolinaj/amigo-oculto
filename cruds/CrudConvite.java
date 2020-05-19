@@ -16,11 +16,13 @@ public class CrudConvite {
     private static BufferedReader br = new BufferedReader(isr);
 
     private static Arquivo<Convite> arquivoConvites;
-
     private static ArvoreB chavesGruposUsuario;
     private static ListaInvertida convitesPendentes;
+
     private static CrudGrupo crudGrupo;
     private static CrudUsuario crudUsuario;
+    private static CrudParticipacao crudParticipacao;
+
     private Usuario usuarioLogado;
 
     public CrudConvite(Usuario usuarioLogado) {
@@ -31,10 +33,11 @@ public class CrudConvite {
         }
     }
 
-    public void inicializarBaseDados(CrudGrupo cg, CrudUsuario cu) {
+    public void inicializarBaseDados(CrudGrupo cg, CrudUsuario cu, CrudParticipacao cp) {
         try {
             crudGrupo = cg;
             crudUsuario = cu;
+            crudParticipacao = cp;
             // tenta abrir os arquivos da base de dados caso existam; se não existirem, são
             // criados
             arquivoConvites = new Arquivo<>(Convite.class.getConstructor(), "convites.db");
@@ -178,17 +181,33 @@ public class CrudConvite {
     }
 
     public void exibirConvitesGrupo(Grupo grupo) throws Exception {
+        exibirConvitesGrupo(grupo, false);
+    }
+
+    public void exibirConvitesGrupo(Grupo grupo, boolean somenteConvitesAtivos) throws Exception {
         int[] idsConvites = chavesGruposUsuario.lista(grupo.getID());
         Convite[] convites = new Convite[idsConvites.length];
+        int contadorIndice = 0;
 
         for (int i = 0; i < idsConvites.length; i++) {
-            convites[i] = (Convite) arquivoConvites.buscar(idsConvites[i]);
+            Convite convite = (Convite) arquivoConvites.buscar(idsConvites[i]);
+            if ((somenteConvitesAtivos && convite.getEstado() == 1) || !somenteConvitesAtivos) {
+                convites[contadorIndice++] = convite;
+            }
         }
 
-        System.out.println("CONVITES DO GRUPO \"" + grupo.getNome() + "\"\n");
+        if (somenteConvitesAtivos) {
+            System.out.println("PARTICIPANTES DO GRUPO \"" + grupo.getNome() + "\"\n");
+        } else {
+            System.out.println("CONVITES DO GRUPO \"" + grupo.getNome() + "\"\n");
+        }
 
         if (convites.length == 0) {
-            System.out.println("Ainda não foi emitido nenhum convite para este grupo.");
+            if (somenteConvitesAtivos) {
+                System.out.println("Ainda não existem participações ativas neste grupo.");
+            } else {
+                System.out.println("Ainda não foi emitido nenhum convite para este grupo.");
+            }
         }
 
         for (int i = 0; i < convites.length; i++) {
@@ -351,6 +370,7 @@ public class CrudConvite {
 
                             convites[indiceConvite].setEstado((byte) 1); // aceito
                             arquivoConvites.atualizar(convites[indiceConvite]);
+                            crudParticipacao.inserirParticipacao(convites[indiceConvite]);
                             convitesPendentes.delete(this.usuarioLogado.getEmail(), convites[indiceConvite].getID());
                             System.out.println("\nConvite aceito com sucesso.");
                             Util.mensagemContinuar();

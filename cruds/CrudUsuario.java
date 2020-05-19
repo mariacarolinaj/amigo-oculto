@@ -149,6 +149,11 @@ public class CrudUsuario {
   public Usuario obterUsuarioPorId(int id) throws Exception {
     return (Usuario) arquivoUsuarios.buscar(id);
   }
+
+  public ChaveSecundariaUsuario obterDadosUsuarioPorEmail(String email) throws Exception {
+    return (ChaveSecundariaUsuario) arquivoUsuarios.buscarChaveSecundariaUsuario(email);
+  }
+
   // #endregion
 
   // #region UPDATE

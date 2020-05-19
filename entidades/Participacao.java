@@ -12,6 +12,15 @@ public class Participacao implements Registro {
     private int idGrupo;
     private int idAmigo;
 
+    public Participacao() {
+    }
+
+    public Participacao(int idUsuario, int idGrupo, int idAmigo) {
+        this.setIdUsuario(idUsuario);
+        this.setIdGrupo(idGrupo);
+        this.setIdAmigo(idAmigo);
+    }
+
     @Override
     public int getID() {
         return idParticipacao;

@@ -19,6 +19,7 @@ public class AmigoOculto {
     private static CrudSugestao crudSugestao;
     private static CrudGrupo crudGrupo;
     private static CrudConvite crudConvite;
+    private static CrudParticipacao crudParticipacao;
 
     public static void main(String[] args) throws IOException {
         crudUsuario = new CrudUsuario();
@@ -37,9 +38,11 @@ public class AmigoOculto {
     private static void inicializarServicos(Usuario usuarioLogado) {
         crudSugestao = new CrudSugestao(usuarioLogado.getID());
         crudConvite = new CrudConvite(usuarioLogado);
-        crudGrupo = new CrudGrupo(usuarioLogado.getID(), crudConvite);
+        crudParticipacao = new CrudParticipacao(usuarioLogado.getID());
+        crudGrupo = new CrudGrupo(usuarioLogado.getID(), crudConvite, crudParticipacao);
         
-        crudConvite.inicializarBaseDados(crudGrupo, crudUsuario);
+        crudConvite.inicializarBaseDados(crudGrupo, crudUsuario, crudParticipacao);
+        crudParticipacao.inicializarBaseDados(crudGrupo, crudConvite, crudUsuario);
     }
 
     /*

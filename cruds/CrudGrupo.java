@@ -16,12 +16,15 @@ public class CrudGrupo {
     private static ArvoreB chavesGruposUsuario;
 
     private static CrudConvite crudConvite;
+    private static CrudParticipacao crudParticipacao;
+    
     private int idUsuarioLogado;
 
-    public CrudGrupo(int idUsuarioLogado, CrudConvite cc) {
+    public CrudGrupo(int idUsuarioLogado, CrudConvite cc, CrudParticipacao cp) {
         try {
             this.inicializarBaseDados(idUsuarioLogado);
             crudConvite = cc;
+            crudParticipacao = cp;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,6 +107,7 @@ public class CrudGrupo {
                     crudConvite.exibeMenuConvite();
                     break;
                 case 3:
+                    crudParticipacao.exibeMenuParticipantes();
                     break;
                 case 4:
                     break;
