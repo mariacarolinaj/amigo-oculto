@@ -1,6 +1,8 @@
 package cruds;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import entidades.Convite;
 import entidades.Grupo;
@@ -215,4 +217,81 @@ public class CrudParticipacao {
         }
     }
     // #endregion
+
+    public void exibirMenuParticipacoes() throws Exception {
+        System.out.println("ESCOLHA UM DOS GRUPOS QUE VOCÊ PARTICIPA:\n");
+        Grupo grupoSelecionado = crudGrupo.listarESelecionarGrupoAtivo();
+
+        Util.limparTela();
+
+        if (grupoSelecionado != null) {
+            int opcao;
+
+            do {
+                System.out.println("INÍCIO > GRUPOS > PARTICIPAÇÃO EM GRUPO\n");
+                this.exibirDadosGrupoSelecionado(grupoSelecionado);
+
+                opcao = this.exibirMenuParticipacaoGrupo();
+
+                Util.limparTela();
+
+                switch (opcao) {
+                    case 1:
+                        this.listarParticipantes(grupoSelecionado, false);
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 0: // não é preciso fazer nada
+                        break;
+                    default:
+                        Util.mensagemTenteNovamente();
+                        Util.mensagemContinuar();
+                }
+            } while (opcao != 0);
+        }
+    }
+
+    private int exibirMenuParticipacaoGrupo() throws NumberFormatException, IOException {
+        System.out.println("\n1: Visualizar participantes");
+        System.out.println("2: Visualizar amigo sorteado");
+        System.out.println("3: Ler/enviar mensagens ao grupo");
+        System.out.println("0: Voltar para o menu anterior");
+
+        System.out.print("\nIr para: ");
+        int opcao = Integer.parseInt(br.readLine());
+
+        return opcao;
+    }
+
+    private void exibirDadosGrupoSelecionado(Grupo grupoSelecionado) {
+        System.out.println(grupoSelecionado.getNome());
+
+        Date data = new Date(grupoSelecionado.getMomentoSorteio());
+        SimpleDateFormat dataFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String dataString = dataFormat.format(data);
+
+        String statusSorteio = "";
+
+        if (grupoSelecionado.isSorteado()) {
+            statusSorteio = "ocorreu";
+        } else {
+            statusSorteio = "ocorrerá";
+        }
+
+        System.out.println("O sorteio " + statusSorteio + " dia " + dataString + ", às " + data.getHours() + ":"
+                + data.getMinutes() + ".");
+
+        System.out.println("Os presentes devem ter o valor aproximado de R$ " + grupoSelecionado.getValor() + ".");
+
+        data = new Date(grupoSelecionado.getMomentoEncontro());
+        dataString = dataFormat.format(data);
+        System.out.println(
+                "O encontro ocorrerá em " + dataString + ", às " + data.getHours() + ":" + data.getMinutes() + ",");
+        System.out.println("em " + grupoSelecionado.getLocalEncontro());
+
+        System.out.println("\nObservações: ");
+        System.out.println(grupoSelecionado.getObservacoes());
+    }
 }

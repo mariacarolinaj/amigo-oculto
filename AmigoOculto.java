@@ -118,7 +118,7 @@ public class AmigoOculto {
                     crudSugestao.exibeMenuSugestoes();
                     break;
                 case 2:
-                    crudGrupo.exibeMenuGerenciamento();
+                    crudGrupo.exibeMenuGrupos();
                     break;
                 case 3:
                     crudConvite.verificarConvitesPendentes();

@@ -73,6 +73,7 @@ public class CrudGrupo {
                     this.exibeMenuGerenciamento();
                     break;
                 case 2:
+                    this.crudParticipacao.exibirMenuParticipacoes();
                     break;
                 case 0: // não é necessário fazer nada
                     break;
