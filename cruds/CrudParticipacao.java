@@ -367,8 +367,8 @@ public class CrudParticipacao {
                 participantes = this.embaralhar(participantes); // embaralha participantes
 
                 participantes.get(participantes.size() - 1).setIdAmigo(participantes.get(0).getIdUsuario());
-
-                for (int i = 0; i < participantes.size() - 1; i++) {
+                arquivoParticipacoes.atualizar(participantes.get(participantes.size() - 1));
+                for (int i = 0; i < participantes.size(); i++) {
                     int idAmigoSorteado = participantes.get(i + 1).getIdUsuario();
                     participantes.get(i).setIdAmigo(idAmigoSorteado);
                     arquivoParticipacoes.atualizar(participantes.get(i));
@@ -391,7 +391,7 @@ public class CrudParticipacao {
     private List<Participacao> embaralhar(List<Participacao> lista) {
         Random random = new Random();
 
-        for (int i = 0; i < (lista.size() - 1); i++) {
+        for (int i = 0; i < (lista.size()); i++) {
 
             // sorteia um índice
             int j = random.nextInt(lista.size());
