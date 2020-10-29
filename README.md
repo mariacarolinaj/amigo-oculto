@@ -1,7 +1,6 @@
  Projeto Amigo Oculto
 
  Trabalho prático para a disciplina de Algoritmos e Estruturas de Dados III do curso de Ciência da Computação
- Implementado por Maria Carolina, Viktor Guilherme e Roberto Mafra em 1/2020
  PUC Minas - Professor Marcos Kutova
 
  Observações:
